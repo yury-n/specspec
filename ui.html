@@ -2,94 +2,380 @@
   #page {
     box-sizing: border-box;
     padding: 15px;
-    padding-bottom: 5px;
     font-family: sans-serif;
     font-size: 13px;
   }
-  .header {
-    margin-bottom: 15px;
-    font-weight: bold;
-  }
-  .block {
-    margin: 0px 0 30px;
-  }
-  .tag-list {
+  .props-form {
+    position: relative;
+    margin-top: 24px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    padding: 19px;
+    border: 1px solid #c5c5c5;
+    border-radius: 6px;
   }
-  .tag {
+  #individual-props {
     display: flex;
     align-items: center;
-    padding: 2px 12px;
-    background: #fff;
-    margin-right: 8px;
-    margin-bottom: 8px;
-    border: 2px solid #000;
-    border-radius: 6px;
-    white-space: nowrap;
   }
-  .tag strong {
-    font-size: 18px;
-    font-weight: normal;
-    margin: 0 5px;
-  }
-  .tag.invalid {
-    background: #ff8ba76e;
-  }
-  #code {
-    background: #faeee7;
-    border-radius: 4px;
-    padding: 20px;
-    font-family: Courier New;
-    box-sizing: border-box;
-    white-space: pre-wrap;
-    resize: none;
-    border: none;
-    width: 100%;
-    height: 200px;
-  }
-  #code-block {
-    position: relative;
-  }
-  #copy-button {
+  .x-button {
     position: absolute;
-    top: 47px;
-    right: 10px;
-    background: #ffffff;
-    border-color: #0a0a0a00;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    cursor: pointer;
+    width: 9px;
+    right: 9px;
+    top: 2px;
   }
-  #copy-button:active {
-    background: #000;
+
+  .dropdown-wrapper {
+    display: flex;
+    align-items: center;
+  }
+  .dropdown-wrapper.locked {
+    font-weight: bold;
+  }
+
+  .dropdown-wrapper input {
+    margin-left: 0;
+    margin-right: 8px;
+    margin-top: 0;
+  }
+
+  .dropdown-wrapper select {
+    margin-left: 8px;
+  }
+
+  .dropdown-wrapper + .dropdown-wrapper {
+    margin-top: 10px;
+  }
+
+  #button {
+    margin-top: 14px;
+  }
+  .disabled-option-label {
+    opacity: 0.5;
+  }
+  .mode {
+    display: flex;
+    align-items: center;
+  }
+  .mode input {
+    margin-right: 8px;
+  }
+  .mode + .mode {
+    margin-top: 8px;
+  }
+  #combinations {    
+    margin-top: 18px;
+  }
+  #combinations-header {
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  .primary-button {
     color: white;
+    background: black;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 12px;
+    min-width: 112px;    
+  }
+  .secondary-button {
+    color: black;
+    background: white;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 9px 12px;   
+  }
+  .secondary-button.disabled {
+    color: #999;
+    border-color: white;
+    cursor: default;
+    opacity: 0;
+  }
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+  #add-combination-button,
+  #save-init-props {
+    width: 100%;
+    margin-top: 18px;
+    background: #f3f3f3;
+  }
+  .combination {
+    display: flex;
+    align-items: center;
+  }
+  .combination input {
+    margin-right: 8px;
+  }
+  .combination .grouped-by {
+    background: #e3f930;
+  }
+  .combination + .combination {
+    margin-top: 4px;
+  }
+  .header {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .group-by-checkbox {
+    display: none;
+  }
+  .toggle-button {
+    width: 12px;
+    height: 12px;
+    padding: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.2;
+  }
+  .toggle-button:hover,
+  .toggle-button.active {
+    opacity: 1;
+  }
+  .toggle-button svg {
+    pointer-events: none;
+  }
+  .icon-button {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .icon-button svg {
+    width: 100%;
+  }
+  .props-form-header {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  #initial-props-dropdowns .toggle-button {
+    display: none;
   }
 </style>
 
 <div id="page">
-  <div id="non-DS-styles-block" class="block" style="display: none;">
-    <div class="header">Styles with non-DS values</div>
-    <div id="non-DS-styles" class="tag-list"></div>
+  <div id="mode-selector">
+    <div class="header">Generate Spec</div>
+    <div class="mode">
+      <div id="individual-props">
+        <input type="checkbox" checked /> Individual props and their values
+        <div class="toggle-button" id="init-props-gear" style="margin-left: 6px;" onclick="javascript: showBasePropsForm()"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="gear" class="svg-inline--fa fa-gear" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M499.5 332c0-5.66-3.112-11.13-8.203-14.07l-46.61-26.91C446.8 279.6 448 267.1 448 256s-1.242-23.65-3.34-35.02l46.61-26.91c5.092-2.941 8.203-8.411 8.203-14.07c0-14.1-41.98-99.04-63.86-99.04c-2.832 0-5.688 .7266-8.246 2.203l-46.72 26.98C362.9 94.98 342.4 83.1 320 75.16V21.28c0-7.523-5.162-14.28-12.53-15.82C290.8 1.977 273.7 0 256 0s-34.85 1.977-51.48 5.461C197.2 7.004 192 13.76 192 21.28v53.88C169.6 83.1 149.1 94.98 131.4 110.1L84.63 83.16C82.08 81.68 79.22 80.95 76.39 80.95c-19.72 0-63.86 81.95-63.86 99.04c0 5.66 3.112 11.13 8.203 14.07l46.61 26.91C65.24 232.4 64 244 64 256s1.242 23.65 3.34 35.02l-46.61 26.91c-5.092 2.941-8.203 8.411-8.203 14.07c0 14.1 41.98 99.04 63.86 99.04c2.832 0 5.688-.7266 8.246-2.203l46.72-26.98C149.1 417 169.6 428.9 192 436.8v53.88c0 7.523 5.162 14.28 12.53 15.82C221.2 510 238.3 512 255.1 512s34.85-1.977 51.48-5.461C314.8 504.1 320 498.2 320 490.7v-53.88c22.42-7.938 42.93-19.82 60.65-34.97l46.72 26.98c2.557 1.477 5.416 2.203 8.246 2.203C455.3 431 499.5 349.1 499.5 332zM256 336c-44.11 0-80-35.89-80-80S211.9 176 256 176s80 35.89 80 80S300.1 336 256 336z"></path></svg></div>
+      </div>
+    </div>
+    <div id="combinations" style="display: none;">
+      <div id="combinations-header">Combinations</div>
+    </div>
   </div>
-  <div id="shared-block" class="block" style="display: none;">
-    <div class="header">Shared styles</div>
-    <div id="shared-list" class="tag-list"></div>
-  </div>
-  <div id="code-block" class="block">
-    <div class="header">CSS vars code</div>
-    <textarea id="code" onClick="this.setSelectionRange(0, this.value.length)"></textarea>
+  
+  <div id="base-props-form" class="props-form" style="display: none;">
+    <svg id="base-props-x" class="x-button" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8995 1.10051C21.29 1.49103 21.29 2.1242 20.8995 2.51472L12.4136 10.9996L20.9706 19.5564C21.3311 19.9168 21.3588 20.4841 21.0538 20.8764L20.9706 20.9706C20.6101 21.3311 20.0429 21.3588 19.6506 21.0538L19.5564 20.9706L10.9996 12.4136L2.51472 20.8995C2.1242 21.29 1.49103 21.29 1.10051 20.8995C0.709986 20.509 0.709986 19.8758 1.10051 19.4853L9.58462 10.9996L1.17158 2.58579C0.811094 2.22531 0.783365 1.65808 1.08839 1.26579L1.17158 1.17158C1.53206 0.811094 2.09929 0.783365 2.49158 1.08839L2.58579 1.17158L10.9996 9.58462L19.4853 1.10051C19.8758 0.709986 20.509 0.709986 20.8995 1.10051Z" fill="#06070D"/>
+    </svg>      
+    <div class="props-form-header">Initial props</div>
+    <div id="initial-props-dropdowns" class="props-dropdowns"></div>
+    <button id="save-init-props" class="secondary-button">Save</button>
+  </div> 
+
+  <div id="new-combination-form" class="props-form" style="display: none;">
+    <svg id="new-combination-x" class="x-button" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8995 1.10051C21.29 1.49103 21.29 2.1242 20.8995 2.51472L12.4136 10.9996L20.9706 19.5564C21.3311 19.9168 21.3588 20.4841 21.0538 20.8764L20.9706 20.9706C20.6101 21.3311 20.0429 21.3588 19.6506 21.0538L19.5564 20.9706L10.9996 12.4136L2.51472 20.8995C2.1242 21.29 1.49103 21.29 1.10051 20.8995C0.709986 20.509 0.709986 19.8758 1.10051 19.4853L9.58462 10.9996L1.17158 2.58579C0.811094 2.22531 0.783365 1.65808 1.08839 1.26579L1.17158 1.17158C1.53206 0.811094 2.09929 0.783365 2.49158 1.08839L2.58579 1.17158L10.9996 9.58462L19.4853 1.10051C19.8758 0.709986 20.509 0.709986 20.8995 1.10051Z" fill="#06070D"/>
+    </svg>      
+    <div class="props-form-header">Add variant</div>
+    <div id="new-combination-props-dropdowns" class="props-dropdowns"></div>
+    <button id="add-combination-button" class="secondary-button">Add</button>
   </div>  
+  <div class="button-container">
+    <button id="new-combination-button" class="secondary-button" style="margin-bottom: 30px;">+ Add variant</button>
+    <button id="generate-button" class="primary-button">Generate</button>
+  </div>
 </div>
 
 <script>
-  onmessage = (event) => {
-    const { code, nonPaletteStylesNames } = event.data.pluginMessage;
-    const nonPaletteStylesNamesFormatted = nonPaletteStylesNames.map(s => s.replace(/\//g, ' <strong>/</strong> '));    
-    if (nonPaletteStylesNames.length > 0) {
-      document.getElementById('non-DS-styles').innerHTML = '<span class="tag invalid">' + nonPaletteStylesNames.join('</span><span class="tag invalid">') + '</span>';
-      document.getElementById('non-DS-styles-block').style.display = 'block';
+  const highlightColors = ['#f2ff85', '#ffe7b1', '#ffd2b2', '#ffbed3', '#fcd5fd', '#ebe7ff'];
+
+  let pickedColors = {};
+  let pickedColorsCount = 0;
+  
+  const getHighlightColor = (propValueToken) => {
+    if (!pickedColors[propValueToken]) {
+      pickedColors[propValueToken] = highlightColors[pickedColorsCount];
+      pickedColorsCount++;
     }
-    document.getElementById('code').value = code;
+
+    return pickedColors[propValueToken];
+  }
+
+  const showBasePropsForm = () => {
+    document.getElementById('base-props-form').style.display = 'block';
+  }
+
+  const hideBasePropsForm = () => {
+    document.getElementById('base-props-form').style.display = 'none';
+  }
+  
+
+  const showAddCombinationForm = () => {
+    document.getElementById('new-combination-form').style.display = 'block';
+    document.getElementById('new-combination-button').classList.add('disabled');
+  }
+
+  const hideAddCombinationForm = () => {
+    document.getElementById('new-combination-form').style.display = 'none';
+    document.getElementById('new-combination-button').classList.remove('disabled');
+    if (combinations.length === 0 && Object.keys(combinationsGrouped).length === 0) {
+      document.getElementById('combinations').style.display = 'none';
+    }
+    document.querySelectorAll('#new-combination-props-dropdowns input[type=radio]').forEach(input => {
+      input.checked = false;
+    })
+  }
+
+  const generateSpec = () => {
+    const combinationsFiltered = combinations.filter((combination, index) => {
+      console.log('>>>', `combination-${index}`)
+      const checkbox = document.getElementById(`combination-${index}`);
+      return checkbox.checked;
+    });
+    parent.postMessage({ pluginMessage: { type: 'generate', combinations: combinationsFiltered, combinationsGrouped, initProps } }, '*');
+  }
+
+  const unlockedIcon = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="lock-open" class="svg-inline--fa fa-lock-open" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M446.4 .7031C360.5-7.664 288 59.85 288 144V224H64C28.65 224 0 252.7 0 288v160c0 35.34 28.65 64 64 64h320c35.35 0 64-28.66 64-64V288c0-35.35-28.65-64-64-64h-32V144c0-46.89 40.52-84.46 88.37-79.57C481.1 68.68 512 106.9 512 148.7V208C512 216.8 519.2 224 528 224h32C568.8 224 576 216.8 576 208V150.4C576 75.24 521.2 7.992 446.4 .7031z"></path></svg>';
+  const lockedIcon = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="lock" class="svg-inline--fa fa-lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 223.1L368 224V144c0-79.41-64.59-144-144-144S80 64.59 80 144V224L64 223.1c-35.35 0-64 28.65-64 64v160c0 35.34 28.65 64 64 64h320c35.35 0 64-28.66 64-64v-160C448 252.7 419.3 223.1 384 223.1zM144 144C144 99.88 179.9 64 224 64s80 35.88 80 80V224h-160V144z"></path></svg>';
+
+  let initProps;
+  let combinations = [];
+  let combinationsGrouped = {};
+
+  const saveInitProps = () => {
+    initProps = {};
+    document.querySelectorAll('#initial-props-dropdowns select').forEach((select, index) => {
+      const prop = select.name;
+      const propValue = select.value;
+      initProps[prop] = propValue;
+    });
+
+    hideBasePropsForm();
+    document.getElementById('init-props-gear').classList.add('active');
+  }
+
+  const addCombination = () => {
+    const combination = {};
+    let combinationIsUnderAGroup = false;
+    let combinationString = '';
+    let groupUnderString = '';
+    
+    document.querySelectorAll('#new-combination-props-dropdowns select').forEach((select, index) => {
+      const prop = select.name;
+      const propValue = select.value;
+
+      const shouldGroupUnderThisProp = document.querySelectorAll('#new-combination-props-dropdowns input[type=checkbox]')[index].checked;
+
+      let token = propValue;
+      if (['yes', 'no', 'on', 'off', 'true', 'false'].includes(propValue.toLowerCase())) {
+        token = `${prop} = ${propValue}`;
+      }
+      
+      combination[prop] = propValue;
+
+      if (shouldGroupUnderThisProp) {
+        combinationIsUnderAGroup = true;
+        const highlightColor = getHighlightColor(token);
+        token = `<span class="grouped-by" style="background: ${highlightColor}">${token}</span>`;
+        const propAndValue = `${prop} = ${propValue}`;
+        if (groupUnderString === '') {
+          groupUnderString = propAndValue;
+        } else {
+          groupUnderString += `, ${propAndValue}`;
+        }
+      }
+
+      if (combinationString === '') {
+        combinationString = token;
+      } else {
+        combinationString += `, ${token}`;
+      }
+    });
+    
+    const combinationId = `combination-${combinations.length}`;
+    document.getElementById('combinations').innerHTML += `
+      <div class="combination">
+        <input type="checkbox" id="${combinationId}" name="drone" value="huey" checked>
+        <label for="${combinationId}">${combinationString}</label>
+      </div>
+    `;    
+    document.getElementById('combinations').style.display = 'block';
+
+    if (!combinationIsUnderAGroup) {
+      combinations.push(combination);
+    } else {
+      if (!combinationsGrouped[groupUnderString]) { 
+        combinationsGrouped[groupUnderString] = [];
+      }
+      combinationsGrouped[groupUnderString].push(combination);
+    }
+  }
+
+  const putGroupByFirst = (e) => {    
+    const propDropdownContainer = e.target.parentNode;
+    const lockIconButton = propDropdownContainer.querySelector('.lock-icon');
+    const isLocked = propDropdownContainer.classList.contains('locked');
+    const dropdowns = propDropdownContainer.parentNode;
+    const lockedOnes = dropdowns.querySelectorAll('.locked');
+    const lastLockedOne = lockedOnes.length ? lockedOnes[lockedOnes.length - 1] : null;
+    
+    if (!isLocked) {
+      propDropdownContainer.querySelector('.group-by-checkbox').checked = true;
+      propDropdownContainer.classList.add('locked');
+      lockIconButton.innerHTML = lockedIcon;
+      lockIconButton.classList.add('active');
+      if (lastLockedOne) {
+        dropdowns.insertBefore(propDropdownContainer, lastLockedOne.nextSibling);
+      } else {
+        dropdowns.prepend(propDropdownContainer);
+      }
+    } else {
+      propDropdownContainer.querySelector('.group-by-checkbox').checked = false;
+      propDropdownContainer.classList.remove('locked');
+      lockIconButton.innerHTML = unlockedIcon;
+      lockIconButton.classList.remove('active');
+      if (lastLockedOne) {
+        dropdowns.insertBefore(propDropdownContainer, lastLockedOne.nextSibling);
+      }
+    }
+  }
+
+  const attachGroupByListeners = () => {
+    document.querySelectorAll('.lock-icon').forEach(icon => icon.addEventListener('click', putGroupByFirst));
+  }
+
+  onmessage = (event) => {
+    const { propsAndTheirOptions } = event.data.pluginMessage;
+
+    let propsDropdowns = '';
+    Object.keys(propsAndTheirOptions).forEach(prop => {
+      let propsDropdown = `<div class="dropdown-wrapper"><div class="toggle-button lock-icon" style="margin-right: 8px">${unlockedIcon}</div><input class="group-by-checkbox" name="group-by" type="checkbox" title="Group under this prop=value" /> ${prop} <select class="prop-dropdown" name="${prop}">`;
+      propsAndTheirOptions[prop].forEach(value => { propsDropdown += `<option value="${value}">${value}</option>` });
+      propsDropdown += `</select></div>`;
+
+      propsDropdowns += propsDropdown;
+    })
+
+    document.querySelectorAll('.props-dropdowns').forEach(dropdown => {
+      dropdown.innerHTML = propsDropdowns;
+    });
+    document.getElementById('generate-button').addEventListener('click', generateSpec);
+    document.getElementById('new-combination-button').addEventListener('click', showAddCombinationForm);
+    document.getElementById('new-combination-x').addEventListener('click', hideAddCombinationForm);
+    document.getElementById('base-props-x').addEventListener('click', hideBasePropsForm);    
+    document.getElementById('add-combination-button').addEventListener('click', addCombination);
+    document.getElementById('save-init-props').addEventListener('click', saveInitProps);    
+    attachGroupByListeners();
   }
 </script>
