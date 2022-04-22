@@ -1,35 +1,35 @@
 const selection: SceneNode = figma.currentPage.selection[0];
 
-const BG_PRIMARY = 'S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8';
-const BG_SECONDARY = 'S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7';
+const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
+const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 
-const TYPOGRAPHY_PRIMARY = 'S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0';
+const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 
-const SPECS_SECTION_HEADER = 'S:dcc46e05405840a3e5e7627d29bce638b5da3deb,517:1';
+const SPECS_SECTION_HEADER = "S:dcc46e05405840a3e5e7627d29bce638b5da3deb,517:1";
 const SPECS_SUBSECTION_HEADER =
-  'S:2f3f8d39705730528f2ba3c3f656186973d65d6a,314:1';
-const H2 = 'S:990695a26044277bd473a8981665c904be540282,137:17';
-const H6 = 'S:8a8333d410ae2a6b019efb9c0486716b8042fec5,137:14';
+  "S:2f3f8d39705730528f2ba3c3f656186973d65d6a,314:1";
+const H2 = "S:990695a26044277bd473a8981665c904be540282,137:17";
+const H6 = "S:8a8333d410ae2a6b019efb9c0486716b8042fec5,137:14";
 
 // auto-layout attributes
-console.log('layoutAlign', selection['layoutAlign']);
-console.log('layoutGrow', selection['layoutGrow']);
-console.log('primaryAxisSizingMode', selection['primaryAxisSizingMode']);
-console.log('counterAxisSizingMode', selection['counterAxisSizingMode']);
+console.log("layoutAlign", selection["layoutAlign"]);
+console.log("layoutGrow", selection["layoutGrow"]);
+console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
+console.log("counterAxisSizingMode", selection["counterAxisSizingMode"]);
 
 figma.showUI(__html__, { width: 300, height: 480 });
 
 function supportsChildren(
   node: SceneNode
 ): node is FrameNode | ComponentNode | InstanceNode | BooleanOperationNode {
-  console.log('!!!', node.type);
+  console.log("!!!", node.type);
   return (
-    node.type === 'FRAME' ||
-    node.type === 'GROUP' ||
-    node.type === 'COMPONENT' ||
-    node.type === 'COMPONENT_SET' ||
-    node.type === 'INSTANCE' ||
-    node.type === 'BOOLEAN_OPERATION'
+    node.type === "FRAME" ||
+    node.type === "GROUP" ||
+    node.type === "COMPONENT" ||
+    node.type === "COMPONENT_SET" ||
+    node.type === "INSTANCE" ||
+    node.type === "BOOLEAN_OPERATION"
   );
 }
 
@@ -43,12 +43,12 @@ const variants = {
 let firstVariant;
 
 if (selection && supportsChildren(selection)) {
-  selection.children.forEach(child => {
-    if (child.type === 'COMPONENT') {
-      const pairs = child.name.split(', ');
-      pairs.forEach(pair => {
-        const [key, value] = pair.split('=');
-        if (typeof propsAndTheirOptions[key] === 'undefined') {
+  selection.children.forEach((child) => {
+    if (child.type === "COMPONENT") {
+      const pairs = child.name.split(", ");
+      pairs.forEach((pair) => {
+        const [key, value] = pair.split("=");
+        if (typeof propsAndTheirOptions[key] === "undefined") {
           propsAndTheirOptions[key] = [value];
         } else if (!propsAndTheirOptions[key].includes(value)) {
           propsAndTheirOptions[key].push(value);
@@ -71,14 +71,26 @@ function getDSindex(name) {
 }
 
 const renderSectionFrame = (title, child) => {
-  const sectionFrame = createAutoFrame('VERTICAL', 10);
+  const sectionFrame = createAutoFrame("VERTICAL", 10);
+
+  const sectionHeaderFrame = createAutoFrame("VERTICAL", 0);
+  const borderRectangle = figma.createRectangle();
+  borderRectangle.resizeWithoutConstraints(1, 1);
+  borderRectangle.layoutAlign = "STRETCH";
+  borderRectangle.fillStyleId = TYPOGRAPHY_PRIMARY;
 
   const sectionHeader = figma.createText();
   sectionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
   sectionHeader.textStyleId = SPECS_SECTION_HEADER;
   sectionHeader.characters = title;
-  sectionFrame.appendChild(sectionHeader);
+
+  sectionHeaderFrame.appendChild(sectionHeader);
+  sectionHeaderFrame.appendChild(borderRectangle);
+  sectionHeaderFrame.layoutAlign = "STRETCH";
+
+  sectionFrame.appendChild(sectionHeaderFrame);
   sectionFrame.appendChild(child);
+
   return sectionFrame;
 };
 
@@ -92,15 +104,15 @@ const renderCombinationsFrame = (
     if (index === 0) {
       return;
     }
-    Object.keys(combination).forEach(prop => {
+    Object.keys(combination).forEach((prop) => {
       if (combination[prop] !== combinations[0][prop]) {
-        propsThatDontChange = propsThatDontChange.filter(p => p !== prop);
+        propsThatDontChange = propsThatDontChange.filter((p) => p !== prop);
       }
     });
   });
-  const combinationsFrame = createAutoFrame('HORIZONTAL', 30);
-  combinations.forEach(combination => {
-    const combinationFrame = createAutoFrame('VERTICAL', 20);
+  const combinationsFrame = createAutoFrame("HORIZONTAL", 30);
+  combinations.forEach((combination) => {
+    const combinationFrame = createAutoFrame("VERTICAL", 20);
     const combinationHeader = figma.createText();
     combinationHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
     combinationHeader.textStyleId = SPECS_SUBSECTION_HEADER;
@@ -115,7 +127,7 @@ const renderCombinationsFrame = (
     try {
       instanceForValue.setProperties(combination);
     } catch (e) {
-      console.log('mmm', e);
+      console.log("mmm", e);
     }
     combinationFrame.appendChild(instanceForValue);
     combinationsFrame.appendChild(combinationFrame);
@@ -124,32 +136,32 @@ const renderCombinationsFrame = (
 };
 
 const renderSpecs = (combinations, combinationsGrouped, initProps) => {
-  const specsFrame = createAutoFrame('VERTICAL');
+  const specsFrame = createAutoFrame("VERTICAL");
   specsFrame.fillStyleId = BG_PRIMARY;
 
   const headingFrame = figma.createFrame();
-  headingFrame.layoutMode = 'HORIZONTAL';
+  headingFrame.layoutMode = "HORIZONTAL";
   headingFrame.paddingTop = 100;
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
   headingFrame.fillStyleId = BG_SECONDARY;
-  headingFrame.layoutAlign = 'STRETCH';
+  headingFrame.layoutAlign = "STRETCH";
   headingFrame.layoutGrow = 0;
-  headingFrame.primaryAxisSizingMode = 'FIXED';
-  headingFrame.counterAxisSizingMode = 'AUTO';
+  headingFrame.primaryAxisSizingMode = "FIXED";
+  headingFrame.counterAxisSizingMode = "AUTO";
 
   const headingText = figma.createText();
   headingText.fillStyleId = TYPOGRAPHY_PRIMARY;
-  headingText.fontName = { family: 'Menlo', style: 'Bold' };
+  headingText.fontName = { family: "Menlo", style: "Bold" };
   headingText.fontSize = 36;
   headingText.characters = selection.name;
   headingFrame.appendChild(headingText);
 
   specsFrame.appendChild(headingFrame);
 
-  const bodyFrame = createAutoFrame('VERTICAL', 30);
-  bodyFrame.fillStyleId = BG_PRIMARY;
+  const bodyFrame = createAutoFrame("VERTICAL", 30);
+  bodyFrame.fills = [];
   bodyFrame.paddingTop = 50;
   bodyFrame.paddingRight = 50;
   bodyFrame.paddingBottom = 50;
@@ -159,13 +171,13 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
 
   console.log({ propsAndTheirOptions });
 
-  Object.keys(propsAndTheirOptions).forEach(prop => {
-    const propOptionsFrame = createAutoFrame('HORIZONTAL', 30);
-    propsAndTheirOptions[prop].forEach(option => {
-      const optionFrame = createAutoFrame('VERTICAL', 20);
+  Object.keys(propsAndTheirOptions).forEach((prop) => {
+    const propOptionsFrame = createAutoFrame("HORIZONTAL", 30);
+    propsAndTheirOptions[prop].forEach((option) => {
+      const optionFrame = createAutoFrame("VERTICAL", 20);
       const optionHeader = figma.createText();
       optionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
-      optionHeader.fontName = { family: 'Menlo', style: 'Bold' };
+      optionHeader.fontName = { family: "Menlo", style: "Bold" };
       optionHeader.fontSize = 18;
       optionHeader.characters = option;
       optionFrame.appendChild(optionHeader);
@@ -175,7 +187,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
         properties[prop] = option;
         instanceForValue.setProperties(properties);
       } catch (e) {
-        console.log('mmm', e);
+        console.log("mmm", e);
       }
       optionFrame.appendChild(instanceForValue);
       propOptionsFrame.appendChild(optionFrame);
@@ -186,11 +198,11 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
   });
 
   if (Object.keys(combinationsGrouped).length) {
-    Object.keys(combinationsGrouped).forEach(groupUnderString => {
-      const propValuePairs = groupUnderString.split(', ');
+    Object.keys(combinationsGrouped).forEach((groupUnderString) => {
+      const propValuePairs = groupUnderString.split(", ");
       const propsGroupUnder = [];
-      propValuePairs.forEach(propValue => {
-        const [prop] = propValue.split(' = ');
+      propValuePairs.forEach((propValue) => {
+        const [prop] = propValue.split(" = ");
         propsGroupUnder.push(prop);
       });
       const combinationsSectionFrame = renderSectionFrame(
@@ -207,7 +219,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
 
   if (combinations.length) {
     const combinationsSectionFrame = renderSectionFrame(
-      'Combinations',
+      "Combinations",
       renderCombinationsFrame(combinations)
     );
     bodyFrame.appendChild(combinationsSectionFrame);
@@ -220,14 +232,14 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
 };
 
 const getTitleForCombination = (combination, propsToExclude) => {
-  let title = '';
-  Object.keys(combination).forEach(prop => {
+  let title = "";
+  Object.keys(combination).forEach((prop) => {
     if (propsToExclude.includes(prop)) {
       return;
     }
     const propValue = combination[prop];
     const pairTitle = `${prop} = ${propValue}`;
-    if (title === '') {
+    if (title === "") {
       title = pairTitle;
     } else {
       title += ` +\n${pairTitle}`;
@@ -242,25 +254,25 @@ const createAutoFrame = (mode, itemSpacing?) => {
   if (itemSpacing) {
     frame.itemSpacing = itemSpacing;
   }
-  frame.fillStyleId = BG_PRIMARY;
-  frame.layoutAlign = 'INHERIT';
+  frame.fills = [];
+  frame.layoutAlign = "INHERIT";
   frame.layoutGrow = 0;
-  frame.primaryAxisSizingMode = 'AUTO';
-  frame.counterAxisSizingMode = 'AUTO';
+  frame.primaryAxisSizingMode = "AUTO";
+  frame.counterAxisSizingMode = "AUTO";
   return frame;
 };
 
-figma.ui.onmessage = msg => {
-  if (msg.type === 'generate') {
+figma.ui.onmessage = (msg) => {
+  if (msg.type === "generate") {
     figma
-      .loadFontAsync({ family: 'Roboto', style: 'Regular' })
+      .loadFontAsync({ family: "Roboto", style: "Regular" })
       .then(() =>
-        figma.loadFontAsync({ family: 'Devious Sans', style: 'Bold' })
+        figma.loadFontAsync({ family: "Devious Sans", style: "Bold" })
       )
-      .then(() => figma.loadFontAsync({ family: 'Menlo', style: 'Bold' }))
-      .then(() => figma.loadFontAsync({ family: 'Menlo', style: 'Regular' }))
+      .then(() => figma.loadFontAsync({ family: "Menlo", style: "Bold" }))
+      .then(() => figma.loadFontAsync({ family: "Menlo", style: "Regular" }))
       .then(() =>
-        figma.loadFontAsync({ family: 'Devious Sans', style: 'Bold' })
+        figma.loadFontAsync({ family: "Devious Sans", style: "Bold" })
       )
       .then(() =>
         renderSpecs(msg.combinations, msg.combinationsGrouped, msg.initProps)
