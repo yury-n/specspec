@@ -1,3 +1,19 @@
+const DA_mode = false;
+
+const primaryTypographyColor = {
+  r: 0.9725490212440491,
+  g: 0.9725490212440491,
+  b: 0.9725490212440491,
+};
+
+const primaryTypographyFill: SolidPaint = {
+  type: "SOLID",
+  color: primaryTypographyColor,
+  blendMode: "NORMAL",
+  visible: true,
+  opacity: 0.5,
+};
+
 const selection: SceneNode = figma.currentPage.selection[0];
 
 const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
@@ -12,6 +28,7 @@ const H2 = "S:990695a26044277bd473a8981665c904be540282,137:17";
 const H6 = "S:8a8333d410ae2a6b019efb9c0486716b8042fec5,137:14";
 
 // auto-layout attributes
+console.log("fills", selection["fills"]);
 console.log("layoutAlign", selection["layoutAlign"]);
 console.log("layoutGrow", selection["layoutGrow"]);
 console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
@@ -73,15 +90,16 @@ function getDSindex(name) {
 const renderSectionFrame = (title, child) => {
   const sectionFrame = createAutoFrame("VERTICAL", 10);
 
-  const sectionHeaderFrame = createAutoFrame("VERTICAL", 0);
+  const sectionHeaderFrame = createAutoFrame("VERTICAL", 14);
   const borderRectangle = figma.createRectangle();
   borderRectangle.resizeWithoutConstraints(1, 1);
   borderRectangle.layoutAlign = "STRETCH";
-  borderRectangle.fillStyleId = TYPOGRAPHY_PRIMARY;
+  borderRectangle.fills = [primaryTypographyFill];
 
   const sectionHeader = figma.createText();
   sectionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
-  sectionHeader.textStyleId = SPECS_SECTION_HEADER;
+  sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
+  sectionHeader.fontSize = 24;
   sectionHeader.characters = title;
 
   sectionHeaderFrame.appendChild(sectionHeader);
@@ -110,7 +128,7 @@ const renderCombinationsFrame = (
       }
     });
   });
-  const combinationsFrame = createAutoFrame("HORIZONTAL", 30);
+  const combinationsFrame = createAutoFrame("HORIZONTAL", 60);
   combinations.forEach((combination) => {
     const combinationFrame = createAutoFrame("VERTICAL", 20);
     const combinationHeader = figma.createText();
@@ -153,18 +171,18 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
 
   const headingText = figma.createText();
   headingText.fillStyleId = TYPOGRAPHY_PRIMARY;
-  headingText.fontName = { family: "Menlo", style: "Bold" };
-  headingText.fontSize = 36;
+  headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
+  headingText.fontSize = 38;
   headingText.characters = selection.name;
   headingFrame.appendChild(headingText);
 
   specsFrame.appendChild(headingFrame);
 
-  const bodyFrame = createAutoFrame("VERTICAL", 30);
+  const bodyFrame = createAutoFrame("VERTICAL", 60);
   bodyFrame.fills = [];
-  bodyFrame.paddingTop = 50;
+  bodyFrame.paddingTop = 60;
   bodyFrame.paddingRight = 50;
-  bodyFrame.paddingBottom = 50;
+  bodyFrame.paddingBottom = 60;
   bodyFrame.paddingLeft = 50;
 
   specsFrame.appendChild(bodyFrame);
@@ -177,7 +195,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
       const optionFrame = createAutoFrame("VERTICAL", 20);
       const optionHeader = figma.createText();
       optionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
-      optionHeader.fontName = { family: "Menlo", style: "Bold" };
+      optionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
       optionHeader.fontSize = 18;
       optionHeader.characters = option;
       optionFrame.appendChild(optionHeader);
@@ -265,14 +283,9 @@ const createAutoFrame = (mode, itemSpacing?) => {
 figma.ui.onmessage = (msg) => {
   if (msg.type === "generate") {
     figma
-      .loadFontAsync({ family: "Roboto", style: "Regular" })
+      .loadFontAsync({ family: "Helvetica Neue", style: "Bold" })
       .then(() =>
-        figma.loadFontAsync({ family: "Devious Sans", style: "Bold" })
-      )
-      .then(() => figma.loadFontAsync({ family: "Menlo", style: "Bold" }))
-      .then(() => figma.loadFontAsync({ family: "Menlo", style: "Regular" }))
-      .then(() =>
-        figma.loadFontAsync({ family: "Devious Sans", style: "Bold" })
+        figma.loadFontAsync({ family: "Helvetica Neue", style: "Medium" })
       )
       .then(() =>
         renderSpecs(msg.combinations, msg.combinationsGrouped, msg.initProps)
