@@ -1,25 +1,77 @@
 const DA_mode = false;
-const primaryTypographyColor = {
-    r: 0.9725490212440491,
-    g: 0.9725490212440491,
-    b: 0.9725490212440491,
-};
-const primaryTypographyFill = {
-    type: "SOLID",
-    color: primaryTypographyColor,
-    blendMode: "NORMAL",
-    visible: true,
-    opacity: 0.5,
+let theme = "dark";
+const themeColors = {
+    dark: {
+        BACKGROUND_PRIMARY: {
+            type: "SOLID",
+            color: {
+                r: 0.0235294122248888,
+                g: 0.027450980618596077,
+                b: 0.05098039284348488,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+        BACKGROUND_SECONDARY: {
+            type: "SOLID",
+            color: {
+                r: 0.08627451211214066,
+                g: 0.10196078568696976,
+                b: 0.12156862765550613,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+        TYPOGRAPHY_FILL: {
+            type: "SOLID",
+            color: {
+                r: 0.9725490212440491,
+                g: 0.9725490212440491,
+                b: 0.9725490212440491,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+    },
+    light: {
+        BACKGROUND_PRIMARY: {
+            type: "SOLID",
+            color: {
+                r: 0.9176470637321472,
+                g: 0.9176470637321472,
+                b: 0.9176470637321472,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+        BACKGROUND_SECONDARY: {
+            type: "SOLID",
+            color: {
+                r: 0.9803921580314636,
+                g: 0.9803921580314636,
+                b: 0.9803921580314636,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+        TYPOGRAPHY_FILL: {
+            type: "SOLID",
+            color: {
+                r: 0.054901961237192154,
+                g: 0.05098039284348488,
+                b: 0.125490203499794,
+            },
+            blendMode: "NORMAL",
+            visible: true,
+        },
+    },
 };
 const selection = figma.currentPage.selection[0];
 const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
 const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
-const SPECS_SECTION_HEADER = "S:dcc46e05405840a3e5e7627d29bce638b5da3deb,517:1";
-const SPECS_SUBSECTION_HEADER = "S:2f3f8d39705730528f2ba3c3f656186973d65d6a,314:1";
-const H2 = "S:990695a26044277bd473a8981665c904be540282,137:17";
-const H6 = "S:8a8333d410ae2a6b019efb9c0486716b8042fec5,137:14";
 // auto-layout attributes
+console.log("selection", selection);
 console.log("fills", selection["fills"]);
 console.log("layoutAlign", selection["layoutAlign"]);
 console.log("layoutGrow", selection["layoutGrow"]);
@@ -61,8 +113,13 @@ if (selection && supportsChildren(selection)) {
             // specsFrame.appendChild(childInstance);
         }
     });
-    figma.ui.postMessage({
-        propsAndTheirOptions,
+    figma.clientStorage.getAsync("theme").then((themeFromStorage) => {
+        theme = themeFromStorage || "dark";
+        figma.ui.postMessage({
+            type: "render-ui",
+            propsAndTheirOptions,
+            theme,
+        });
     });
 }
 function getDSindex(name) {
@@ -75,9 +132,10 @@ const renderSectionFrame = (title, child) => {
     const borderRectangle = figma.createRectangle();
     borderRectangle.resizeWithoutConstraints(1, 1);
     borderRectangle.layoutAlign = "STRETCH";
-    borderRectangle.fills = [primaryTypographyFill];
+    const dividerFill = Object.assign({ opacity: 0.5 }, themeColors[theme]["TYPOGRAPHY_FILL"]);
+    borderRectangle.fills = [dividerFill];
     const sectionHeader = figma.createText();
-    sectionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
+    sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
     sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
     sectionHeader.fontSize = 24;
     sectionHeader.characters = title;
@@ -104,8 +162,9 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
     combinations.forEach((combination) => {
         const combinationFrame = createAutoFrame("VERTICAL", 20);
         const combinationHeader = figma.createText();
-        combinationHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
-        combinationHeader.textStyleId = SPECS_SUBSECTION_HEADER;
+        combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+        combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
+        combinationHeader.fontSize = 18;
         combinationHeader.characters = getTitleForCombination(combination, []
             .concat(propsToExclude)
             .concat(excludePropsThatDontChange ? propsThatDontChange : []));
@@ -124,20 +183,20 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
 };
 const renderSpecs = (combinations, combinationsGrouped, initProps) => {
     const specsFrame = createAutoFrame("VERTICAL");
-    specsFrame.fillStyleId = BG_PRIMARY;
+    specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
     const headingFrame = figma.createFrame();
     headingFrame.layoutMode = "HORIZONTAL";
     headingFrame.paddingTop = 100;
     headingFrame.paddingRight = 50;
     headingFrame.paddingBottom = 32;
     headingFrame.paddingLeft = 50;
-    headingFrame.fillStyleId = BG_SECONDARY;
+    headingFrame.fills = [themeColors[theme]["BACKGROUND_SECONDARY"]];
     headingFrame.layoutAlign = "STRETCH";
     headingFrame.layoutGrow = 0;
     headingFrame.primaryAxisSizingMode = "FIXED";
     headingFrame.counterAxisSizingMode = "AUTO";
     const headingText = figma.createText();
-    headingText.fillStyleId = TYPOGRAPHY_PRIMARY;
+    headingText.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
     headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
     headingText.fontSize = 38;
     headingText.characters = selection.name;
@@ -156,8 +215,8 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
         propsAndTheirOptions[prop].forEach((option) => {
             const optionFrame = createAutoFrame("VERTICAL", 20);
             const optionHeader = figma.createText();
-            optionHeader.fillStyleId = TYPOGRAPHY_PRIMARY;
-            optionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
+            optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+            optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
             optionHeader.fontSize = 18;
             optionHeader.characters = option;
             optionFrame.appendChild(optionHeader);
@@ -194,7 +253,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
     }
     figma.currentPage.appendChild(specsFrame);
     specsFrame.x = selection.x;
-    specsFrame.y = selection.y + selection.height + 100;
+    specsFrame.y = selection.y + 100;
     figma.viewport.scrollAndZoomIntoView([specsFrame]);
 };
 const getTitleForCombination = (combination, propsToExclude) => {
@@ -233,5 +292,9 @@ figma.ui.onmessage = (msg) => {
             .loadFontAsync({ family: "Helvetica Neue", style: "Bold" })
             .then(() => figma.loadFontAsync({ family: "Helvetica Neue", style: "Medium" }))
             .then(() => renderSpecs(msg.combinations, msg.combinationsGrouped, msg.initProps));
+    }
+    else if (msg.type === "set-theme") {
+        theme = msg.theme;
+        figma.clientStorage.setAsync("theme", msg.theme);
     }
 };

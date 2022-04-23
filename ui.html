@@ -89,7 +89,7 @@
     color: #999;
     border-color: white;
     cursor: default;
-    opacity: 0;
+    display: none;
   }
   .button-container {
     display: flex;
@@ -131,7 +131,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0.2;
+    opacity: 0.3;
   }
   .toggle-button:hover,
   .toggle-button.active {
@@ -157,6 +157,21 @@
   }
   #initial-props-dropdowns .toggle-button {
     display: none;
+  }
+
+  #new-combination-form {
+    margin-bottom: 30px;
+  }
+
+  .theme-selector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;    
+  }
+  .theme-selector input {
+    margin: 0;
+    margin-left: 12px;
+    margin-right: 6px; 
   }
 </style>
 
@@ -193,6 +208,11 @@
   </div>  
   <div class="button-container">
     <button id="new-combination-button" class="secondary-button" style="margin-bottom: 30px;">+ Add variant</button>
+    <div class="theme-selector">
+      Theme: 
+      <input id="theme-dark" type="radio" name="theme" /><label for="theme-dark">Dark</label>
+      <input id="theme-light" type="radio" name="theme" /><label for="theme-light">Light</label>
+    </div>
     <button id="generate-button" class="primary-button">Generate</button>
   </div>
 </div>
@@ -239,7 +259,6 @@
 
   const generateSpec = () => {
     const combinationsFiltered = combinations.filter((combination, index) => {
-      console.log('>>>', `combination-${index}`)
       const checkbox = document.getElementById(`combination-${index}`);
       return checkbox.checked;
     });
@@ -355,27 +374,34 @@
     document.querySelectorAll('.lock-icon').forEach(icon => icon.addEventListener('click', putGroupByFirst));
   }
 
-  onmessage = (event) => {
-    const { propsAndTheirOptions } = event.data.pluginMessage;
+  onmessage = (event) => {    
+      const { propsAndTheirOptions, theme = 'dark' } = event.data.pluginMessage;
 
-    let propsDropdowns = '';
-    Object.keys(propsAndTheirOptions).forEach(prop => {
-      let propsDropdown = `<div class="dropdown-wrapper"><div class="toggle-button lock-icon" style="margin-right: 8px">${unlockedIcon}</div><input class="group-by-checkbox" name="group-by" type="checkbox" title="Group under this prop=value" /> ${prop} <select class="prop-dropdown" name="${prop}">`;
-      propsAndTheirOptions[prop].forEach(value => { propsDropdown += `<option value="${value}">${value}</option>` });
-      propsDropdown += `</select></div>`;
+      let propsDropdowns = '';
+      Object.keys(propsAndTheirOptions).forEach(prop => {
+        let propsDropdown = `<div class="dropdown-wrapper"><div title="Group under this prop + value pair" class="toggle-button lock-icon" style="margin-right: 8px">${unlockedIcon}</div><input class="group-by-checkbox" name="group-by" type="checkbox" title="Group under this prop=value" /> ${prop} <select class="prop-dropdown" name="${prop}">`;
+        propsAndTheirOptions[prop].forEach(value => { propsDropdown += `<option value="${value}">${value}</option>` });
+        propsDropdown += `</select></div>`;
 
-      propsDropdowns += propsDropdown;
-    })
+        propsDropdowns += propsDropdown;
+      })
 
-    document.querySelectorAll('.props-dropdowns').forEach(dropdown => {
-      dropdown.innerHTML = propsDropdowns;
-    });
-    document.getElementById('generate-button').addEventListener('click', generateSpec);
-    document.getElementById('new-combination-button').addEventListener('click', showAddCombinationForm);
-    document.getElementById('new-combination-x').addEventListener('click', hideAddCombinationForm);
-    document.getElementById('base-props-x').addEventListener('click', hideBasePropsForm);    
-    document.getElementById('add-combination-button').addEventListener('click', addCombination);
-    document.getElementById('save-init-props').addEventListener('click', saveInitProps);    
-    attachGroupByListeners();
+      document.querySelectorAll('.props-dropdowns').forEach(dropdown => {
+        dropdown.innerHTML = propsDropdowns;
+      });
+      document.getElementById('generate-button').addEventListener('click', generateSpec);
+      document.getElementById('new-combination-button').addEventListener('click', showAddCombinationForm);
+      document.getElementById('new-combination-x').addEventListener('click', hideAddCombinationForm);
+      document.getElementById('base-props-x').addEventListener('click', hideBasePropsForm);    
+      document.getElementById('add-combination-button').addEventListener('click', addCombination);
+      document.getElementById('save-init-props').addEventListener('click', saveInitProps);  
+      document.getElementById(`theme-${theme}`).setAttribute('checked', true);       
+      document.getElementById('theme-dark').addEventListener('change', (e) => {
+          parent.postMessage({ pluginMessage: { type: 'set-theme', theme: 'dark' } }, '*');
+      });
+      document.getElementById('theme-light').addEventListener('change', (e) => {
+          parent.postMessage({ pluginMessage: { type: 'set-theme', theme: 'light' } }, '*');
+      });
+      attachGroupByListeners();
   }
 </script>
