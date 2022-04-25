@@ -79,7 +79,7 @@ if (figma.currentPage.selection.length !== 1) {
     figma.closePlugin("Please select a component with variants");
 }
 else {
-    const selection = figma.currentPage.selection[0];
+    selection = figma.currentPage.selection[0];
     if (selection.type !== "COMPONENT_SET") {
         figma.closePlugin("Please select a component with variants");
     }
