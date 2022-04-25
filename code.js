@@ -1,4 +1,5 @@
 const DA_mode = false;
+let selection = null;
 let generatedSpecId = null;
 let theme = "dark";
 const themeColors = {
@@ -67,7 +68,50 @@ const themeColors = {
         },
     },
 };
-const selection = figma.currentPage.selection[0];
+const propsAndTheirOptions = {
+/* prop => [option1, option2] */
+};
+const variants = {
+/* keyed by "Prop-Value" string */
+};
+let firstVariant;
+if (figma.currentPage.selection.length !== 1) {
+    figma.closePlugin("Please select a component with variants");
+}
+else {
+    const selection = figma.currentPage.selection[0];
+    if (selection.type !== "COMPONENT_SET") {
+        figma.closePlugin("Please select a component with variants");
+    }
+    if (selection && supportsChildren(selection)) {
+        selection.children.forEach((child) => {
+            if (child.type === "COMPONENT") {
+                const pairs = child.name.split(", ");
+                pairs.forEach((pair) => {
+                    const [key, value] = pair.split("=");
+                    if (typeof propsAndTheirOptions[key] === "undefined") {
+                        propsAndTheirOptions[key] = [value];
+                    }
+                    else if (!propsAndTheirOptions[key].includes(value)) {
+                        propsAndTheirOptions[key].push(value);
+                    }
+                    firstVariant = child;
+                    variants[`${key}-${value}`] = child;
+                });
+                // const childInstance = child.createInstance();
+                // specsFrame.appendChild(childInstance);
+            }
+        });
+        figma.clientStorage.getAsync("theme").then((themeFromStorage) => {
+            theme = themeFromStorage || "dark";
+            figma.ui.postMessage({
+                type: "render-ui",
+                propsAndTheirOptions,
+                theme,
+            });
+        });
+    }
+}
 const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
 const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
@@ -86,41 +130,6 @@ function supportsChildren(node) {
         node.type === "COMPONENT_SET" ||
         node.type === "INSTANCE" ||
         node.type === "BOOLEAN_OPERATION");
-}
-const propsAndTheirOptions = {
-/* prop => [option1, option2] */
-};
-const variants = {
-/* keyed by "Prop-Value" string */
-};
-let firstVariant;
-if (selection && supportsChildren(selection)) {
-    selection.children.forEach((child) => {
-        if (child.type === "COMPONENT") {
-            const pairs = child.name.split(", ");
-            pairs.forEach((pair) => {
-                const [key, value] = pair.split("=");
-                if (typeof propsAndTheirOptions[key] === "undefined") {
-                    propsAndTheirOptions[key] = [value];
-                }
-                else if (!propsAndTheirOptions[key].includes(value)) {
-                    propsAndTheirOptions[key].push(value);
-                }
-                firstVariant = child;
-                variants[`${key}-${value}`] = child;
-            });
-            // const childInstance = child.createInstance();
-            // specsFrame.appendChild(childInstance);
-        }
-    });
-    figma.clientStorage.getAsync("theme").then((themeFromStorage) => {
-        theme = themeFromStorage || "dark";
-        figma.ui.postMessage({
-            type: "render-ui",
-            propsAndTheirOptions,
-            theme,
-        });
-    });
 }
 function getDSindex(name) {
     const matchResult = name.match(/^([0-9]+\.[0-9]+.*?)\s/);
