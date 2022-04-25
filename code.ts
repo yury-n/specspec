@@ -1,4 +1,5 @@
 const DA_mode = false;
+let generatedSpecId = null;
 
 let theme = "dark";
 
@@ -76,19 +77,18 @@ const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 
 // auto-layout attributes
-console.log("selection", selection);
-console.log("fills", selection["fills"]);
-console.log("layoutAlign", selection["layoutAlign"]);
-console.log("layoutGrow", selection["layoutGrow"]);
-console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
-console.log("counterAxisSizingMode", selection["counterAxisSizingMode"]);
+// console.log("selection", selection);
+// console.log("fills", selection["fills"]);
+// console.log("layoutAlign", selection["layoutAlign"]);
+// console.log("layoutGrow", selection["layoutGrow"]);
+// console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
+// console.log("counterAxisSizingMode", selection["counterAxisSizingMode"]);
 
 figma.showUI(__html__, { width: 300, height: 480 });
 
 function supportsChildren(
   node: SceneNode
 ): node is FrameNode | ComponentNode | InstanceNode | BooleanOperationNode {
-  console.log("!!!", node.type);
   return (
     node.type === "FRAME" ||
     node.type === "GROUP" ||
@@ -149,7 +149,7 @@ const renderSectionFrame = (title, child) => {
   borderRectangle.resizeWithoutConstraints(1, 1);
   borderRectangle.layoutAlign = "STRETCH";
   const dividerFill = Object.assign(
-    { opacity: 0.5 },
+    { opacity: 0.25 },
     themeColors[theme]["TYPOGRAPHY_FILL"]
   );
   borderRectangle.fills = [dividerFill];
@@ -203,16 +203,23 @@ const renderCombinationsFrame = (
     const instanceForValue = firstVariant.createInstance();
     try {
       instanceForValue.setProperties(combination);
-    } catch (e) {
-      console.log("mmm", e);
-    }
+    } catch (e) {}
     combinationFrame.appendChild(instanceForValue);
     combinationsFrame.appendChild(combinationFrame);
   });
   return combinationsFrame;
 };
 
-const renderSpecs = (combinations, combinationsGrouped, initProps) => {
+const renderSpecs = (
+  combinations,
+  combinationsGrouped,
+  withIndividualProps,
+  initProps
+) => {
+  if (generatedSpecId) {
+    const previousSpec = figma.getNodeById(generatedSpecId);
+    previousSpec && previousSpec.remove();
+  }
   const specsFrame = createAutoFrame("VERTICAL");
   specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
 
@@ -243,36 +250,35 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
   bodyFrame.paddingRight = 50;
   bodyFrame.paddingBottom = 60;
   bodyFrame.paddingLeft = 50;
+  generatedSpecId = specsFrame.id;
 
   specsFrame.appendChild(bodyFrame);
 
-  console.log({ propsAndTheirOptions });
+  if (withIndividualProps) {
+    Object.keys(propsAndTheirOptions).forEach((prop) => {
+      const propOptionsFrame = createAutoFrame("HORIZONTAL", 30);
+      propsAndTheirOptions[prop].forEach((option) => {
+        const optionFrame = createAutoFrame("VERTICAL", 20);
+        const optionHeader = figma.createText();
+        optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+        optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
+        optionHeader.fontSize = 18;
+        optionHeader.characters = option;
+        optionFrame.appendChild(optionHeader);
+        const instanceForValue = firstVariant.createInstance();
+        try {
+          const properties = initProps ? Object.assign({}, initProps) : {};
+          properties[prop] = option;
+          instanceForValue.setProperties(properties);
+        } catch (e) {}
+        optionFrame.appendChild(instanceForValue);
+        propOptionsFrame.appendChild(optionFrame);
+      });
 
-  Object.keys(propsAndTheirOptions).forEach((prop) => {
-    const propOptionsFrame = createAutoFrame("HORIZONTAL", 30);
-    propsAndTheirOptions[prop].forEach((option) => {
-      const optionFrame = createAutoFrame("VERTICAL", 20);
-      const optionHeader = figma.createText();
-      optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
-      optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
-      optionHeader.fontSize = 18;
-      optionHeader.characters = option;
-      optionFrame.appendChild(optionHeader);
-      const instanceForValue = firstVariant.createInstance();
-      try {
-        const properties = initProps ? Object.assign({}, initProps) : {};
-        properties[prop] = option;
-        instanceForValue.setProperties(properties);
-      } catch (e) {
-        console.log("mmm", e);
-      }
-      optionFrame.appendChild(instanceForValue);
-      propOptionsFrame.appendChild(optionFrame);
+      const propFrame = renderSectionFrame(prop, propOptionsFrame);
+      bodyFrame.appendChild(propFrame);
     });
-
-    const propFrame = renderSectionFrame(prop, propOptionsFrame);
-    bodyFrame.appendChild(propFrame);
-  });
+  }
 
   if (Object.keys(combinationsGrouped).length) {
     Object.keys(combinationsGrouped).forEach((groupUnderString) => {
@@ -283,7 +289,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
         propsGroupUnder.push(prop);
       });
       const combinationsSectionFrame = renderSectionFrame(
-        `Combinations [${groupUnderString}]`,
+        groupUnderString,
         renderCombinationsFrame(
           combinationsGrouped[groupUnderString],
           propsGroupUnder,
@@ -304,7 +310,7 @@ const renderSpecs = (combinations, combinationsGrouped, initProps) => {
 
   figma.currentPage.appendChild(specsFrame);
   specsFrame.x = selection.x;
-  specsFrame.y = selection.y + 100;
+  specsFrame.y = selection.y + selection.height + 100;
   figma.viewport.scrollAndZoomIntoView([specsFrame]);
 };
 
@@ -347,7 +353,12 @@ figma.ui.onmessage = (msg) => {
         figma.loadFontAsync({ family: "Helvetica Neue", style: "Medium" })
       )
       .then(() =>
-        renderSpecs(msg.combinations, msg.combinationsGrouped, msg.initProps)
+        renderSpecs(
+          msg.combinations,
+          msg.combinationsGrouped,
+          msg.withIndividualProps,
+          msg.initProps
+        )
       );
   } else if (msg.type === "set-theme") {
     theme = msg.theme;
