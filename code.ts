@@ -211,7 +211,7 @@ const renderCombinationsFrame = (
 };
 
 const setSpecsFrameStyles = (specsFrame) => {
-  specsFrame = [themeColors[theme]["BACKGROUND_PRIMARY"]];
+  specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
 };
 
 const setSpecsHeadingFrameStyles = (headingFrame) => {
