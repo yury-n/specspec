@@ -1,5 +1,3 @@
-const DA_mode = false;
-
 let selection: SceneNode = null;
 let generatedSpecId = null;
 
@@ -158,16 +156,10 @@ const renderSectionFrame = (title, child) => {
   const borderRectangle = figma.createRectangle();
   borderRectangle.resizeWithoutConstraints(1, 1);
   borderRectangle.layoutAlign = "STRETCH";
-  const dividerFill = Object.assign(
-    { opacity: 0.25 },
-    themeColors[theme]["TYPOGRAPHY_FILL"]
-  );
-  borderRectangle.fills = [dividerFill];
+  setBorderStyles(borderRectangle);
 
   const sectionHeader = figma.createText();
-  sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
-  sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
-  sectionHeader.fontSize = 24;
+  setSectionHeaderStyles(sectionHeader);
   sectionHeader.characters = title;
 
   sectionHeaderFrame.appendChild(sectionHeader);
@@ -200,9 +192,7 @@ const renderCombinationsFrame = (
   combinations.forEach((combination) => {
     const combinationFrame = createAutoFrame("VERTICAL", 20);
     const combinationHeader = figma.createText();
-    combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
-    combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
-    combinationHeader.fontSize = 18;
+    setCombinationHeaderStyles(combinationHeader);
     combinationHeader.characters = getTitleForCombination(
       combination,
       []
@@ -220,6 +210,55 @@ const renderCombinationsFrame = (
   return combinationsFrame;
 };
 
+const setSpecsFrameStyles = (specsFrame) => {
+  specsFrame = [themeColors[theme]["BACKGROUND_PRIMARY"]];
+};
+
+const setSpecsHeadingFrameStyles = (headingFrame) => {
+  headingFrame.layoutMode = "HORIZONTAL";
+  headingFrame.paddingTop = 100;
+  headingFrame.paddingRight = 50;
+  headingFrame.paddingBottom = 32;
+  headingFrame.paddingLeft = 50;
+  headingFrame.fills = [themeColors[theme]["BACKGROUND_SECONDARY"]];
+  headingFrame.layoutAlign = "STRETCH";
+  headingFrame.layoutGrow = 0;
+  headingFrame.primaryAxisSizingMode = "FIXED";
+  headingFrame.counterAxisSizingMode = "AUTO";
+};
+
+const setSpecsHeadingTextStyles = (headingText) => {
+  headingText.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
+  headingText.fontSize = 38;
+};
+
+const setSectionHeaderStyles = (sectionHeader) => {
+  sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
+  sectionHeader.fontSize = 24;
+};
+
+const setOptionHeaderStyles = (optionHeader) => {
+  optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
+  optionHeader.fontSize = 18;
+};
+
+const setCombinationHeaderStyles = (combinationHeader) => {
+  combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
+  combinationHeader.fontSize = 18;
+};
+
+const setBorderStyles = (borderRectangle) => {
+  const dividerFill = Object.assign(
+    { opacity: 0.25 },
+    themeColors[theme]["TYPOGRAPHY_FILL"]
+  );
+  borderRectangle.fills = [dividerFill];
+};
+
 const renderSpecs = (
   combinations,
   combinationsGrouped,
@@ -231,24 +270,13 @@ const renderSpecs = (
     previousSpec && previousSpec.remove();
   }
   const specsFrame = createAutoFrame("VERTICAL");
-  specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
+  setSpecsFrameStyles(specsFrame);
 
   const headingFrame = figma.createFrame();
-  headingFrame.layoutMode = "HORIZONTAL";
-  headingFrame.paddingTop = 100;
-  headingFrame.paddingRight = 50;
-  headingFrame.paddingBottom = 32;
-  headingFrame.paddingLeft = 50;
-  headingFrame.fills = [themeColors[theme]["BACKGROUND_SECONDARY"]];
-  headingFrame.layoutAlign = "STRETCH";
-  headingFrame.layoutGrow = 0;
-  headingFrame.primaryAxisSizingMode = "FIXED";
-  headingFrame.counterAxisSizingMode = "AUTO";
+  setSpecsHeadingFrameStyles(headingFrame);
 
   const headingText = figma.createText();
-  headingText.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
-  headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
-  headingText.fontSize = 38;
+  setSpecsHeadingTextStyles(headingText);
   headingText.characters = selection.name;
   headingFrame.appendChild(headingText);
 
@@ -270,9 +298,7 @@ const renderSpecs = (
       propsAndTheirOptions[prop].forEach((option) => {
         const optionFrame = createAutoFrame("VERTICAL", 20);
         const optionHeader = figma.createText();
-        optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
-        optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
-        optionHeader.fontSize = 18;
+        setOptionHeaderStyles(optionHeader);
         optionHeader.characters = option;
         optionFrame.appendChild(optionHeader);
         const instanceForValue = firstVariant.createInstance();
