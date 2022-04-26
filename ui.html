@@ -208,11 +208,6 @@
   </div>  
   <div class="button-container">
     <button id="new-combination-button" class="secondary-button" style="margin-bottom: 30px;">+ Add variant</button>
-    <div class="theme-selector">
-      Theme: 
-      <input id="theme-dark" type="radio" name="theme" /><label for="theme-dark">Dark</label>
-      <input id="theme-light" type="radio" name="theme" /><label for="theme-light">Light</label>
-    </div>
     <button id="generate-button" class="primary-button">Generate</button>
   </div>
 </div>
@@ -396,14 +391,7 @@
       document.getElementById('new-combination-x').addEventListener('click', hideAddCombinationForm);
       document.getElementById('base-props-x').addEventListener('click', hideBasePropsForm);    
       document.getElementById('add-combination-button').addEventListener('click', addCombination);
-      document.getElementById('save-init-props').addEventListener('click', saveInitProps);  
-      document.getElementById(`theme-${theme}`).setAttribute('checked', true);       
-      document.getElementById('theme-dark').addEventListener('change', (e) => {
-          parent.postMessage({ pluginMessage: { type: 'set-theme', theme: 'dark' } }, '*');
-      });
-      document.getElementById('theme-light').addEventListener('change', (e) => {
-          parent.postMessage({ pluginMessage: { type: 'set-theme', theme: 'light' } }, '*');
-      });
+      document.getElementById('save-init-props').addEventListener('click', saveInitProps);
       attachGroupByListeners();
   }
 </script>

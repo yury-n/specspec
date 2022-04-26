@@ -80,12 +80,12 @@ const variants = {
 let firstVariant;
 
 if (figma.currentPage.selection.length !== 1) {
-  figma.closePlugin("Please select a component with variants");
+  // figma.closePlugin("Please select a component with variants");
 } else {
   selection = figma.currentPage.selection[0];
 
   if (selection.type !== "COMPONENT_SET") {
-    figma.closePlugin("Please select a component with variants");
+    // figma.closePlugin("Please select a component with variants");
   }
 
   if (selection && supportsChildren(selection)) {
@@ -117,13 +117,14 @@ if (figma.currentPage.selection.length !== 1) {
   }
 }
 
-const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
-const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
-const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
+const DA_BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
+const DA_BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
+const DA_BG_TERTIARY = "S:178f63c6996dd50473ef0de71903510f5f32b91b,2016:7";
+const DA_TYPOGRAPHY_PRIMARY =
+  "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 
 // auto-layout attributes
-// console.log("selection", selection);
-// console.log("fills", selection["fills"]);
+console.log("selection", selection);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
 // console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
@@ -210,17 +211,17 @@ const renderCombinationsFrame = (
   return combinationsFrame;
 };
 
-const setSpecsFrameStyles = (specsFrame) => {
-  specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
+const setSpecsFrameStyles = (specsFrame: FrameNode) => {
+  specsFrame.fillStyleId = DA_BG_PRIMARY;
 };
 
-const setSpecsHeadingFrameStyles = (headingFrame) => {
+const setSpecsHeadingFrameStyles = (headingFrame: FrameNode) => {
   headingFrame.layoutMode = "HORIZONTAL";
   headingFrame.paddingTop = 100;
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
-  headingFrame.fills = [themeColors[theme]["BACKGROUND_SECONDARY"]];
+  headingFrame.fillStyleId = DA_BG_SECONDARY;
   headingFrame.layoutAlign = "STRETCH";
   headingFrame.layoutGrow = 0;
   headingFrame.primaryAxisSizingMode = "FIXED";
@@ -228,35 +229,31 @@ const setSpecsHeadingFrameStyles = (headingFrame) => {
 };
 
 const setSpecsHeadingTextStyles = (headingText) => {
-  headingText.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  headingText.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
   headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
   headingText.fontSize = 38;
 };
 
 const setSectionHeaderStyles = (sectionHeader) => {
-  sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  sectionHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 24;
 };
 
 const setOptionHeaderStyles = (optionHeader) => {
-  optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  optionHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
   optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   optionHeader.fontSize = 18;
 };
 
 const setCombinationHeaderStyles = (combinationHeader) => {
-  combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+  combinationHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
   combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   combinationHeader.fontSize = 18;
 };
 
 const setBorderStyles = (borderRectangle) => {
-  const dividerFill = Object.assign(
-    { opacity: 0.25 },
-    themeColors[theme]["TYPOGRAPHY_FILL"]
-  );
-  borderRectangle.fills = [dividerFill];
+  borderRectangle.fillStyleId = DA_BG_TERTIARY;
 };
 
 const renderSpecs = (
