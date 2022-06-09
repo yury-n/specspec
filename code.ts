@@ -1,7 +1,8 @@
 let selection: SceneNode = null;
-let generatedSpecId = null;
+let generatedSpecIds = {};
 
 let theme = "dark";
+let specSheetShift = 0;
 
 const themeColors = {
   dark: {
@@ -68,6 +69,38 @@ const themeColors = {
       visible: true,
     },
   },
+  green: {
+    BACKGROUND_PRIMARY: {
+      type: "SOLID",
+      color: {
+        r: 0.8627451062202454,
+        g: 0.8980392217636108,
+        b: 0.843137264251709,
+      },
+      blendMode: "NORMAL",
+      visible: true,
+    },
+    BACKGROUND_SECONDARY: {
+      type: "SOLID",
+      color: {
+        r: 0.9058823585510254,
+        g: 0.929411768913269,
+        b: 0.8941176533699036,
+      },
+      blendMode: "NORMAL",
+      visible: true,
+    },
+    TYPOGRAPHY_FILL: {
+      type: "SOLID",
+      color: {
+        r: 0.12941177189350128,
+        g: 0.1921568661928177,
+        b: 0.14901961386203766,
+      },
+      blendMode: "NORMAL",
+      visible: true,
+    },
+  },
 };
 
 const propsAndTheirOptions = {
@@ -80,12 +113,12 @@ const variants = {
 let firstVariant;
 
 if (figma.currentPage.selection.length !== 1) {
-  // figma.closePlugin("Please select a component with variants");
+  figma.closePlugin("Please select a component with variants");
 } else {
   selection = figma.currentPage.selection[0];
 
   if (selection.type !== "COMPONENT_SET") {
-    // figma.closePlugin("Please select a component with variants");
+    figma.closePlugin("Please select a component with variants");
   }
 
   if (selection && supportsChildren(selection)) {
@@ -117,14 +150,13 @@ if (figma.currentPage.selection.length !== 1) {
   }
 }
 
-const DA_BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
-const DA_BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
-const DA_BG_TERTIARY = "S:178f63c6996dd50473ef0de71903510f5f32b91b,2016:7";
-const DA_TYPOGRAPHY_PRIMARY =
-  "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
+const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
+const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
+const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 
 // auto-layout attributes
-console.log("selection", selection);
+// console.log("selection", selection);
+// console.log("fills", selection["fills"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
 // console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
@@ -211,17 +243,17 @@ const renderCombinationsFrame = (
   return combinationsFrame;
 };
 
-const setSpecsFrameStyles = (specsFrame: FrameNode) => {
-  specsFrame.fillStyleId = DA_BG_PRIMARY;
+const setSpecsFrameStyles = (specsFrame) => {
+  specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
 };
 
-const setSpecsHeadingFrameStyles = (headingFrame: FrameNode) => {
+const setSpecsHeadingFrameStyles = (headingFrame) => {
   headingFrame.layoutMode = "HORIZONTAL";
   headingFrame.paddingTop = 100;
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
-  headingFrame.fillStyleId = DA_BG_SECONDARY;
+  headingFrame.fills = [themeColors[theme]["BACKGROUND_SECONDARY"]];
   headingFrame.layoutAlign = "STRETCH";
   headingFrame.layoutGrow = 0;
   headingFrame.primaryAxisSizingMode = "FIXED";
@@ -229,31 +261,35 @@ const setSpecsHeadingFrameStyles = (headingFrame: FrameNode) => {
 };
 
 const setSpecsHeadingTextStyles = (headingText) => {
-  headingText.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
+  headingText.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
   headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
   headingText.fontSize = 38;
 };
 
 const setSectionHeaderStyles = (sectionHeader) => {
-  sectionHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
+  sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 24;
 };
 
 const setOptionHeaderStyles = (optionHeader) => {
-  optionHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
+  optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
   optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   optionHeader.fontSize = 18;
 };
 
 const setCombinationHeaderStyles = (combinationHeader) => {
-  combinationHeader.fillStyleId = DA_TYPOGRAPHY_PRIMARY;
+  combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
   combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   combinationHeader.fontSize = 18;
 };
 
 const setBorderStyles = (borderRectangle) => {
-  borderRectangle.fillStyleId = DA_BG_TERTIARY;
+  const dividerFill = Object.assign(
+    { opacity: 0.25 },
+    themeColors[theme]["TYPOGRAPHY_FILL"]
+  );
+  borderRectangle.fills = [dividerFill];
 };
 
 const renderSpecs = (
@@ -262,8 +298,8 @@ const renderSpecs = (
   withIndividualProps,
   initProps
 ) => {
-  if (generatedSpecId) {
-    const previousSpec = figma.getNodeById(generatedSpecId);
+  if (generatedSpecIds[theme]) {
+    const previousSpec = figma.getNodeById(generatedSpecIds[theme]);
     previousSpec && previousSpec.remove();
   }
   const specsFrame = createAutoFrame("VERTICAL");
@@ -285,7 +321,7 @@ const renderSpecs = (
   bodyFrame.paddingRight = 50;
   bodyFrame.paddingBottom = 60;
   bodyFrame.paddingLeft = 50;
-  generatedSpecId = specsFrame.id;
+  generatedSpecIds[theme] = specsFrame.id;
 
   specsFrame.appendChild(bodyFrame);
 
@@ -343,8 +379,9 @@ const renderSpecs = (
 
   figma.currentPage.appendChild(specsFrame);
   specsFrame.x = selection.x;
-  specsFrame.y = selection.y + selection.height + 100;
+  specsFrame.y = selection.y + selection.height + 100 + specSheetShift;
   figma.viewport.scrollAndZoomIntoView([specsFrame]);
+  specSheetShift += specsFrame.height + 100;
 };
 
 const getTitleForCombination = (combination, propsToExclude) => {
@@ -385,14 +422,18 @@ figma.ui.onmessage = (msg) => {
       .then(() =>
         figma.loadFontAsync({ family: "Helvetica Neue", style: "Medium" })
       )
-      .then(() =>
-        renderSpecs(
-          msg.combinations,
-          msg.combinationsGrouped,
-          msg.withIndividualProps,
-          msg.initProps
-        )
-      );
+      .then(() => {
+        specSheetShift = 0;
+        ["dark", "light", "green"].forEach((currentTheme) => {
+          theme = currentTheme;
+          renderSpecs(
+            msg.combinations,
+            msg.combinationsGrouped,
+            msg.withIndividualProps,
+            msg.initProps
+          );
+        });
+      });
   } else if (msg.type === "set-theme") {
     theme = msg.theme;
     figma.clientStorage.setAsync("theme", msg.theme);
