@@ -82,6 +82,15 @@ else {
     if (selection.type !== "COMPONENT_SET") {
         figma.closePlugin("Please select a component with variants");
     }
+    // add Boolean props into propsAndTheirOptions
+    const componentPropertyDefinitions = selection["componentPropertyDefinitions"];
+    Object.keys(componentPropertyDefinitions).forEach((propName) => {
+        const prop = componentPropertyDefinitions[propName];
+        if (prop.type === "BOOLEAN") {
+            propsAndTheirOptions[propName] = [true, false];
+        }
+    });
+    // console.log({ propsAndTheirOptions });
     if (selection && supportsChildren(selection)) {
         selection.children.forEach((child) => {
             if (child.type === "COMPONENT") {
@@ -94,7 +103,9 @@ else {
                     else if (!propsAndTheirOptions[key].includes(value)) {
                         propsAndTheirOptions[key].push(value);
                     }
-                    firstVariant = child;
+                    if (!firstVariant) {
+                        firstVariant = child;
+                    }
                     variants[`${key}-${value}`] = child;
                 });
                 // const childInstance = child.createInstance();
@@ -115,13 +126,20 @@ const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
 const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 // auto-layout attributes
-// console.log("selection", selection);
+console.log("selection", selection);
+// console.log(">>>", selection["description"]);
+// if (selection.type === "COMPONENT_SET") {
+//   // console.log(">>>", selection["componentPropertyDefinitions"]);
+// }
 // console.log("fills", selection["fills"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
 // console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
 // console.log("counterAxisSizingMode", selection["counterAxisSizingMode"]);
 figma.showUI(__html__, { width: 300, height: 480 });
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 function supportsChildren(node) {
     return (node.type === "FRAME" ||
         node.type === "GROUP" ||
@@ -183,7 +201,7 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
     return combinationsFrame;
 };
 const setSpecsFrameStyles = (specsFrame) => {
-    specsFrame = [themeColors[theme]["BACKGROUND_PRIMARY"]];
+    specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
 };
 const setSpecsHeadingFrameStyles = (headingFrame) => {
     headingFrame.layoutMode = "HORIZONTAL";
@@ -250,7 +268,7 @@ const renderSpecs = (combinations, combinationsGrouped, withIndividualProps, ini
                 const optionFrame = createAutoFrame("VERTICAL", 20);
                 const optionHeader = figma.createText();
                 setOptionHeaderStyles(optionHeader);
-                optionHeader.characters = option;
+                optionHeader.characters = capitalizeFirstLetter(option.toString());
                 optionFrame.appendChild(optionHeader);
                 const instanceForValue = firstVariant.createInstance();
                 try {
@@ -258,11 +276,14 @@ const renderSpecs = (combinations, combinationsGrouped, withIndividualProps, ini
                     properties[prop] = option;
                     instanceForValue.setProperties(properties);
                 }
-                catch (e) { }
+                catch (e) {
+                    console.log({ e });
+                }
                 optionFrame.appendChild(instanceForValue);
                 propOptionsFrame.appendChild(optionFrame);
             });
-            const propFrame = renderSectionFrame(prop, propOptionsFrame);
+            const propFrame = renderSectionFrame(capitalizeFirstLetter(prop).split("#")[0], // cut off boolean prop hash index
+            propOptionsFrame);
             bodyFrame.appendChild(propFrame);
         });
     }
