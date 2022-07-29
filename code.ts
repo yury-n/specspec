@@ -92,7 +92,6 @@ const DA_TYPOGRAPHY_PRIMARY =
   "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 
 // auto-layout attributes
-// console.log("selection", selection);
 console.log("fillStyleId", selection["fillStyleId"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
