@@ -82,12 +82,6 @@ const DA_BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
 const DA_BG_TERTIARY = "S:178f63c6996dd50473ef0de71903510f5f32b91b,2016:7";
 const DA_TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 // auto-layout attributes
-console.log("selection", selection);
-// console.log(">>>", selection["description"]);
-// if (selection.type === "COMPONENT_SET") {
-//   // console.log(">>>", selection["componentPropertyDefinitions"]);
-// }
-// console.log("fills", selection["fills"]);
 // console.log("selection", selection);
 console.log("fillStyleId", selection["fillStyleId"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
