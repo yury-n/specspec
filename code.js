@@ -89,7 +89,7 @@ console.log("selection", selection);
 // }
 // console.log("fills", selection["fills"]);
 // console.log("selection", selection);
-// console.log("fills", selection["fills"]);
+console.log("fillStyleId", selection["fillStyleId"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
 // console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
@@ -159,15 +159,7 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
     return combinationsFrame;
 };
 const setSpecsFrameStyles = (specsFrame) => {
-<<<<<<< HEAD
-    specsFrame.fills = [themeColors[theme]["BACKGROUND_PRIMARY"]];
-<<<<<<< HEAD
-    specsFrame.fillStyleId = DA_BG_PRIMARY;
-=======
->>>>>>> 3 themes
-=======
     specsFrame.fillStyleId = themeColors[theme]["BACKGROUND_PRIMARY"];
->>>>>>> add description support + recover themes
 };
 const setSpecsHeadingFrameStyles = (headingFrame) => {
     headingFrame.paddingTop = 100;
