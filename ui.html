@@ -173,6 +173,17 @@
     margin-left: 12px;
     margin-right: 6px; 
   }
+  #edit-config {
+    width: fit-content;
+    margin: auto;
+    margin-top: 10px;
+    background: none;
+    border: none;
+    font-size: 12px;
+  }
+  #edit-config:hover {
+    text-decoration: underline;
+  }
 </style>
 
 <div id="page">
@@ -214,6 +225,8 @@
       <input id="theme-light" type="radio" name="theme" /><label for="theme-light">Light</label>
     </div>
     <button id="generate-button" class="primary-button">Generate</button>
+    <button id="edit-config">Edit JSON config</button>
+    <textarea id="json-config"></textarea>
   </div>
 </div>
 
