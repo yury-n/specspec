@@ -23,6 +23,7 @@
     width: 9px;
     right: 9px;
     top: 2px;
+    z-index: 1;
   }
 
   .dropdown-wrapper {
@@ -184,6 +185,29 @@
   #edit-config:hover {
     text-decoration: underline;
   }
+  #json-config-form {
+    display: none;
+    position: relative;
+    margin-top: 8px;
+    padding-bottom: 72px;
+    height: fit-content;
+  }
+  #json-config {    
+    resize: none;
+    width: 100%;
+    height: 120px;
+    font-size: 11px;    
+    outline: none;
+    border: none;
+  }
+  #save-json-config {
+    width: 100%;
+    background: #f3f3f3;
+    width: calc(100% - 38px);
+    position: absolute;
+    bottom: 19px;    
+    left: 19px;
+  }
 </style>
 
 <div id="page">
@@ -203,7 +227,7 @@
   <div id="base-props-form" class="props-form" style="display: none;">
     <svg id="base-props-x" class="x-button" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8995 1.10051C21.29 1.49103 21.29 2.1242 20.8995 2.51472L12.4136 10.9996L20.9706 19.5564C21.3311 19.9168 21.3588 20.4841 21.0538 20.8764L20.9706 20.9706C20.6101 21.3311 20.0429 21.3588 19.6506 21.0538L19.5564 20.9706L10.9996 12.4136L2.51472 20.8995C2.1242 21.29 1.49103 21.29 1.10051 20.8995C0.709986 20.509 0.709986 19.8758 1.10051 19.4853L9.58462 10.9996L1.17158 2.58579C0.811094 2.22531 0.783365 1.65808 1.08839 1.26579L1.17158 1.17158C1.53206 0.811094 2.09929 0.783365 2.49158 1.08839L2.58579 1.17158L10.9996 9.58462L19.4853 1.10051C19.8758 0.709986 20.509 0.709986 20.8995 1.10051Z" fill="#06070D"/>
-    </svg>      
+    </svg>
     <div class="props-form-header">Base values</div>
     <div id="initial-props-dropdowns" class="props-dropdowns"></div>
     <button id="save-init-props" class="secondary-button">Save</button>
@@ -226,7 +250,13 @@
     </div>
     <button id="generate-button" class="primary-button">Generate</button>
     <button id="edit-config">Edit JSON config</button>
-    <textarea id="json-config"></textarea>
+    <div id="json-config-form" class="props-form">
+      <svg id="json-config-x" class="x-button" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M20.8995 1.10051C21.29 1.49103 21.29 2.1242 20.8995 2.51472L12.4136 10.9996L20.9706 19.5564C21.3311 19.9168 21.3588 20.4841 21.0538 20.8764L20.9706 20.9706C20.6101 21.3311 20.0429 21.3588 19.6506 21.0538L19.5564 20.9706L10.9996 12.4136L2.51472 20.8995C2.1242 21.29 1.49103 21.29 1.10051 20.8995C0.709986 20.509 0.709986 19.8758 1.10051 19.4853L9.58462 10.9996L1.17158 2.58579C0.811094 2.22531 0.783365 1.65808 1.08839 1.26579L1.17158 1.17158C1.53206 0.811094 2.09929 0.783365 2.49158 1.08839L2.58579 1.17158L10.9996 9.58462L19.4853 1.10051C19.8758 0.709986 20.509 0.709986 20.8995 1.10051Z" fill="#06070D"/>
+      </svg>
+      <textarea id="json-config"></textarea>
+      <button id="save-json-config" class="secondary-button">Save</button>
+    </div>
   </div>
 </div>
 
@@ -235,6 +265,10 @@
 
   let pickedColors = {};
   let pickedColorsCount = 0;
+
+  const config = {
+    'theme.dark.body.color': '#CCC'
+  }
   
   const getHighlightColor = (propValueToken) => {
     if (!pickedColors[propValueToken]) {
@@ -280,12 +314,22 @@
     document.getElementById('generate-button').innerText = "Regenerate";
   }
 
+  const showEditConfigForm = () => {
+    document.getElementById('json-config-form').style.display = 'block';
+  }
+
+  const hideEditConfigForm = () => {
+    document.getElementById('json-config-form').style.display = 'none';
+  }
+
   const unlockedIcon = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="lock-open" class="svg-inline--fa fa-lock-open" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="currentColor" d="M446.4 .7031C360.5-7.664 288 59.85 288 144V224H64C28.65 224 0 252.7 0 288v160c0 35.34 28.65 64 64 64h320c35.35 0 64-28.66 64-64V288c0-35.35-28.65-64-64-64h-32V144c0-46.89 40.52-84.46 88.37-79.57C481.1 68.68 512 106.9 512 148.7V208C512 216.8 519.2 224 528 224h32C568.8 224 576 216.8 576 208V150.4C576 75.24 521.2 7.992 446.4 .7031z"></path></svg>';
   const lockedIcon = '<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="lock" class="svg-inline--fa fa-lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M384 223.1L368 224V144c0-79.41-64.59-144-144-144S80 64.59 80 144V224L64 223.1c-35.35 0-64 28.65-64 64v160c0 35.34 28.65 64 64 64h320c35.35 0 64-28.66 64-64v-160C448 252.7 419.3 223.1 384 223.1zM144 144C144 99.88 179.9 64 224 64s80 35.88 80 80V224h-160V144z"></path></svg>';
 
   let initProps;
   let combinations = [];
   let combinationsGrouped = {};
+
+  document.getElementById('json-config').value = JSON.stringify(config, null, 2);
 
   const saveInitProps = () => {
     initProps = {};
@@ -297,6 +341,12 @@
 
     hideBasePropsForm();
     document.getElementById('init-props-gear').classList.add('active');
+  }
+
+  const saveJsonConfig = () => {
+    const newConfig = JSON.parse(document.getElementById('json-config').value);
+    console.log({newConfig});
+    // figma.clientStorage.setAsync('config', config);
   }
 
   const addCombination = () => {
@@ -417,6 +467,9 @@
       document.getElementById('theme-light').addEventListener('change', (e) => {
           parent.postMessage({ pluginMessage: { type: 'set-theme', theme: 'light' } }, '*');
       });
+      document.getElementById('edit-config').addEventListener('click', showEditConfigForm);
+      document.getElementById('json-config-x').addEventListener('click', hideEditConfigForm);
+      document.getElementById('save-json-config').addEventListener('click', saveJsonConfig);
       attachGroupByListeners();
   }
 </script>
