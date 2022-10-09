@@ -189,13 +189,14 @@
     display: none;
     position: relative;
     margin-top: 8px;
+    padding: 10px;
     padding-bottom: 72px;
     height: fit-content;
   }
   #json-config {    
     resize: none;
     width: 100%;
-    height: 120px;
+    height: 140px;
     font-size: 11px;    
     outline: none;
     border: none;
@@ -329,8 +330,6 @@
   let combinations = [];
   let combinationsGrouped = {};
 
-  document.getElementById('json-config').value = JSON.stringify(config, null, 2);
-
   const saveInitProps = () => {
     initProps = {};
     document.querySelectorAll('#initial-props-dropdowns select').forEach((select, index) => {
@@ -345,8 +344,8 @@
 
   const saveJsonConfig = () => {
     const newConfig = JSON.parse(document.getElementById('json-config').value);
-    console.log({newConfig});
-    // figma.clientStorage.setAsync('config', config);
+    parent.postMessage({ pluginMessage: { type: 'save-config', config: newConfig } }, '*');
+    hideEditConfigForm();
   }
 
   const addCombination = () => {
@@ -440,7 +439,9 @@
   }
 
   onmessage = (event) => {    
-      const { propsAndTheirOptions, theme = 'dark' } = event.data.pluginMessage;
+      const { propsAndTheirOptions, theme = 'dark', config } = event.data.pluginMessage;
+
+      document.getElementById('json-config').value = JSON.stringify(config, null, 2);
 
       let propsDropdowns = '';
       Object.keys(propsAndTheirOptions).forEach(prop => {

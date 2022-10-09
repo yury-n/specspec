@@ -11,72 +11,7 @@ const defaultConfig = {
     'theme.light.body.background': '#EAEAEA',
     'theme.light.body.fontColor': '#0E0D20',
 };
-const themeColors = {
-    dark: {
-        BACKGROUND_PRIMARY: {
-            type: "SOLID",
-            color: {
-                r: 0.0235294122248888,
-                g: 0.027450980618596077,
-                b: 0.05098039284348488,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-        BACKGROUND_SECONDARY: {
-            type: "SOLID",
-            color: {
-                r: 0.08627451211214066,
-                g: 0.10196078568696976,
-                b: 0.12156862765550613,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-        TYPOGRAPHY_FILL: {
-            type: "SOLID",
-            color: {
-                r: 0.9725490212440491,
-                g: 0.9725490212440491,
-                b: 0.9725490212440491,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-    },
-    light: {
-        BACKGROUND_PRIMARY: {
-            type: "SOLID",
-            color: {
-                r: 0.9176470637321472,
-                g: 0.9176470637321472,
-                b: 0.9176470637321472,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-        BACKGROUND_SECONDARY: {
-            type: "SOLID",
-            color: {
-                r: 0.9803921580314636,
-                g: 0.9803921580314636,
-                b: 0.9803921580314636,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-        TYPOGRAPHY_FILL: {
-            type: "SOLID",
-            color: {
-                r: 0.054901961237192154,
-                g: 0.05098039284348488,
-                b: 0.125490203499794,
-            },
-            blendMode: "NORMAL",
-            visible: true,
-        },
-    },
-};
+let config = defaultConfig;
 const propsAndTheirOptions = {
 /* prop => [option1, option2] */
 };
@@ -123,8 +58,9 @@ else {
             }
         });
         figma.clientStorage.getAsync("theme").then((themeFromStorage) => {
-            figma.clientStorage.getAsync("config").then(config => {
+            figma.clientStorage.getAsync("config").then(configFromCS => {
                 theme = themeFromStorage || "dark";
+                config = configFromCS ? JSON.parse(configFromCS) : defaultConfig;
                 figma.ui.postMessage({
                     type: "render-ui",
                     propsAndTheirOptions,
@@ -135,9 +71,6 @@ else {
         });
     }
 }
-const BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
-const BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
-const TYPOGRAPHY_PRIMARY = "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
 // auto-layout attributes
 console.log("selection", selection);
 // console.log(">>>", selection["description"]);
@@ -214,7 +147,7 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
     return combinationsFrame;
 };
 const setSpecsFrameStyles = (specsFrame) => {
-    specsFrame.fills = [defaultConfig[`theme.${theme}.body.background`]];
+    specsFrame.fills = [hexToFigmaColor(config[`theme.${theme}.body.background`])];
 };
 const setSpecsHeadingFrameStyles = (headingFrame) => {
     headingFrame.layoutMode = "HORIZONTAL";
@@ -222,7 +155,7 @@ const setSpecsHeadingFrameStyles = (headingFrame) => {
     headingFrame.paddingRight = 50;
     headingFrame.paddingBottom = 32;
     headingFrame.paddingLeft = 50;
-    headingFrame.fills = [defaultConfig[`theme.${theme}.header.background`]];
+    headingFrame.fills = [hexToFigmaColor(config[`theme.${theme}.header.background`])];
     headingFrame.layoutAlign = "STRETCH";
     headingFrame.layoutGrow = 0;
     headingFrame.primaryAxisSizingMode = "FIXED";
@@ -243,27 +176,27 @@ function hexToDecimalRgb(hex) {
     } : null;
 }
 const setSpecsHeadingTextStyles = (headingText) => {
-    headingText.fills = [defaultConfig[`theme.${theme}.header.fontColor`]];
+    headingText.fills = [hexToFigmaColor(config[`theme.${theme}.header.fontColor`])];
     headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
     headingText.fontSize = 38;
 };
 const setSectionHeaderStyles = (sectionHeader) => {
-    sectionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+    sectionHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
     sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
     sectionHeader.fontSize = 24;
 };
 const setOptionHeaderStyles = (optionHeader) => {
-    optionHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+    optionHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
     optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
     optionHeader.fontSize = 18;
 };
 const setCombinationHeaderStyles = (combinationHeader) => {
-    combinationHeader.fills = [themeColors[theme]["TYPOGRAPHY_FILL"]];
+    combinationHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
     combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
     combinationHeader.fontSize = 18;
 };
 const setBorderStyles = (borderRectangle) => {
-    const dividerFill = Object.assign({ opacity: 0.25 }, themeColors[theme]["TYPOGRAPHY_FILL"]);
+    const dividerFill = Object.assign({ opacity: 0.25 }, hexToFigmaColor(config[`theme.${theme}.body.fontColor`]));
     borderRectangle.fills = [dividerFill];
 };
 const renderSpecs = (combinations, combinationsGrouped, withIndividualProps, initProps) => {
@@ -375,5 +308,8 @@ figma.ui.onmessage = (msg) => {
     else if (msg.type === "set-theme") {
         theme = msg.theme;
         figma.clientStorage.setAsync("theme", msg.theme);
+    }
+    else if (msg.type === 'save-config') {
+        figma.clientStorage.setAsync("config", JSON.stringify(msg.config));
     }
 };
