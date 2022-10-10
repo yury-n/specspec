@@ -267,9 +267,7 @@
   let pickedColors = {};
   let pickedColorsCount = 0;
 
-  const config = {
-    'theme.dark.body.color': '#CCC'
-  }
+  const config = {}
   
   const getHighlightColor = (propValueToken) => {
     if (!pickedColors[propValueToken]) {
@@ -343,7 +341,8 @@
   }
 
   const saveJsonConfig = () => {
-    const newConfig = JSON.parse(document.getElementById('json-config').value);
+    const value = document.getElementById('json-config').value;
+    const newConfig = value ? JSON.parse(value) : null;
     parent.postMessage({ pluginMessage: { type: 'save-config', config: newConfig } }, '*');
     hideEditConfigForm();
   }

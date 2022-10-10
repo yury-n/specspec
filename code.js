@@ -310,6 +310,7 @@ figma.ui.onmessage = (msg) => {
         figma.clientStorage.setAsync("theme", msg.theme);
     }
     else if (msg.type === 'save-config') {
-        figma.clientStorage.setAsync("config", JSON.stringify(msg.config));
+        config = msg.config || defaultConfig;
+        figma.clientStorage.setAsync("config", msg.config ? JSON.stringify(msg.config) : undefined);
     }
 };
