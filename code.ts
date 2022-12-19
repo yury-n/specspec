@@ -6,22 +6,22 @@ let specSheetShift = 0;
 
 const themeColors = {
   dark: {
-    BACKGROUND_PRIMARY: "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8",
-    BACKGROUND_SECONDARY: "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7",
-    TYPOGRAPHY_PRIMARY: "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0",
-    TYPOGRAPHY_TERTIARY: "S:19e831bbabd583dcc6206cf96d65c51327456336,1997:155",
+    BACKGROUND_PRIMARY: "ab6827d4e2d7c06ab4dae4b1876bdb139fa85100",
+    BACKGROUND_SECONDARY: "0bd8b8de81f606f927efe9b3228925f5ffbdba98",
+    TYPOGRAPHY_PRIMARY: "fe3bfda22784624ebc72547c3e526d0e1ca315cb",
+    TYPOGRAPHY_TERTIARY: "fd656735b86b49267988cc53ad10827d9a47b7bb",
   },
   light: {
-    BACKGROUND_PRIMARY: "S:319dd5cf2a088cb8319f4a574b7a7ebab09cb14c,5347:0",
-    BACKGROUND_SECONDARY: "S:3f97bc09911e343e57c30f2c9838f8f4bedb9c06,2016:14",
-    TYPOGRAPHY_PRIMARY: "S:c36c9b72400242c94b98100aaca4225baea4f6e0,2578:0",
-    TYPOGRAPHY_TERTIARY: "S:981900c8eb2f7c54311731d4413455017d45d462,2029:0",
+    BACKGROUND_PRIMARY: "7e82cefd2a139615513b5cb9899663a2f26a4e7c",
+    BACKGROUND_SECONDARY: "b2072b5c73acff740cb6b392df7f5d360d733d7b",
+    TYPOGRAPHY_PRIMARY: "af57bb2d5eed62a3aa8c01282b23dd814de8c3d0",
+    TYPOGRAPHY_TERTIARY: "4c7db22717863ce7c68189d75ba54f18723c0481",
   },
   green: {
-    BACKGROUND_PRIMARY: "S:2140587b96f9f00ad127456b24d442381c1d743d,3851:1",
-    BACKGROUND_SECONDARY: "S:ea9fa25647ae785b7d701824eff7ed16e2fa39b0,3851:0",
-    TYPOGRAPHY_PRIMARY: "S:429c73a4d33ce785ed18f864bc84121824c5871f,2489:0",
-    TYPOGRAPHY_TERTIARY: "S:7978eef7c566d8584d608261d21b5ba8bb5b3c98,5656:0",
+    BACKGROUND_PRIMARY: "b2805d038f843d716053ec7bfb4c2c57ca894ddb",
+    BACKGROUND_SECONDARY: "f39b13f27fc0483f13f75abb7973531c1c7c34a3",
+    TYPOGRAPHY_PRIMARY: "ba5bd779872e0139caabe144cf357674a3a9b864",
+    TYPOGRAPHY_TERTIARY: "15c971b896e3119e8f2401811d3c1185b305251a",
   },
 };
 
@@ -85,14 +85,8 @@ if (figma.currentPage.selection.length !== 1) {
   }
 }
 
-const DA_BG_PRIMARY = "S:6523715b284e8f1d83aebadc7c8ce59bcf2137e2,2016:8";
-const DA_BG_SECONDARY = "S:33d8ce3c082bb23d23e4256016944b2a293c074e,2016:7";
-const DA_BG_TERTIARY = "S:178f63c6996dd50473ef0de71903510f5f32b91b,2016:7";
-const DA_TYPOGRAPHY_PRIMARY =
-  "S:d8ae12c0b0046098a0f214e0e5abf6495dea924e,7232:0";
-
 // auto-layout attributes
-console.log("fillStyleId", selection["fillStyleId"]);
+// console.log("fillStyleId", selection["fillStyleId"]);
 // console.log("layoutAlign", selection["layoutAlign"]);
 // console.log("layoutGrow", selection["layoutGrow"]);
 // console.log("primaryAxisSizingMode", selection["primaryAxisSizingMode"]);
@@ -120,6 +114,10 @@ function supportsChildren(
 function getDSindex(name) {
   const matchResult = name.match(/^([0-9]+\.[0-9]+.*?)\s/);
   return matchResult && matchResult[1];
+}
+
+function getStyleId(styleKey) {
+  return fetchedStyles[styleKey].id;
 }
 
 const renderSectionFrame = (title, child) => {
@@ -184,7 +182,7 @@ const renderCombinationsFrame = (
 };
 
 const setSpecsFrameStyles = (specsFrame) => {
-  specsFrame.fillStyleId = themeColors[theme]["BACKGROUND_PRIMARY"];
+  specsFrame.fillStyleId = getStyleId(themeColors[theme]["BACKGROUND_PRIMARY"]);
 };
 
 const setSpecsHeadingFrameStyles = (headingFrame) => {
@@ -192,42 +190,56 @@ const setSpecsHeadingFrameStyles = (headingFrame) => {
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
-  headingFrame.fillStyleId = themeColors[theme]["BACKGROUND_SECONDARY"];
+  headingFrame.fillStyleId = getStyleId(
+    themeColors[theme]["BACKGROUND_SECONDARY"]
+  );
   headingFrame.layoutAlign = "STRETCH";
 };
 
 const setSpecsHeadingTextStyles = (headingText) => {
-  headingText.fillStyleId = themeColors[theme]["TYPOGRAPHY_PRIMARY"];
+  headingText.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_PRIMARY"]
+  );
   headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
   headingText.fontSize = 38;
 };
 
 const setSpecsSubHeadingTextStyles = (sectionHeader) => {
-  sectionHeader.fillStyleId = themeColors[theme]["TYPOGRAPHY_TERTIARY"];
+  sectionHeader.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_TERTIARY"]
+  );
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 16;
 };
 
 const setSectionHeaderStyles = (sectionHeader) => {
-  sectionHeader.fillStyleId = themeColors[theme]["TYPOGRAPHY_PRIMARY"];
+  sectionHeader.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_PRIMARY"]
+  );
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 24;
 };
 
 const setOptionHeaderStyles = (optionHeader) => {
-  optionHeader.fillStyleId = themeColors[theme]["TYPOGRAPHY_PRIMARY"];
+  optionHeader.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_PRIMARY"]
+  );
   optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   optionHeader.fontSize = 18;
 };
 
 const setCombinationHeaderStyles = (combinationHeader) => {
-  combinationHeader.fillStyleId = themeColors[theme]["TYPOGRAPHY_PRIMARY"];
+  combinationHeader.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_PRIMARY"]
+  );
   combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   combinationHeader.fontSize = 18;
 };
 
 const setBorderStyles = (borderRectangle) => {
-  borderRectangle.fillStyleId = themeColors[theme]["TYPOGRAPHY_TERTIARY"];
+  borderRectangle.fillStyleId = getStyleId(
+    themeColors[theme]["TYPOGRAPHY_TERTIARY"]
+  );
 };
 
 const renderSpecs = (
@@ -362,8 +374,29 @@ const createAutoFrame = (mode, itemSpacing?) => {
   frame.layoutGrow = 0;
   frame.primaryAxisSizingMode = "AUTO";
   frame.counterAxisSizingMode = "AUTO";
+  frame.clipsContent = false;
   return frame;
 };
+
+const fetchedStyles = {};
+
+async function fetchStyle(styleKey): Promise<null> {
+  const style = await figma.importStyleByKeyAsync(styleKey);
+  fetchedStyles[styleKey] = style;
+  console.log("fetchedStyle");
+  return new Promise((resolve) => resolve(null));
+}
+
+async function fetchAllStyles() {
+  const processedStyles = [];
+  const requiredStyles = [
+    ...new Set(Object.values(themeColors["dark"])),
+    ...new Set(Object.values(themeColors["light"])),
+    ...new Set(Object.values(themeColors["green"])),
+  ];
+  const promises = requiredStyles.map(fetchStyle);
+  return await Promise.all(promises);
+}
 
 figma.ui.onmessage = (msg) => {
   if (msg.type === "generate") {
@@ -372,9 +405,10 @@ figma.ui.onmessage = (msg) => {
       .then(() =>
         figma.loadFontAsync({ family: "Helvetica Neue", style: "Medium" })
       )
+      .then(fetchAllStyles)
       .then(() => {
         specSheetShift = 0;
-        ["dark", "light", "green"].forEach((currentTheme) => {
+        ["light", "dark", "green"].forEach((currentTheme) => {
           theme = currentTheme;
           renderSpecs(
             msg.combinations,
