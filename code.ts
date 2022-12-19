@@ -4,15 +4,15 @@ let generatedSpecId = null;
 let theme = "dark";
 
 const defaultConfig = {
-  'theme.dark.header.background': '#161A1F',
-  'theme.dark.header.fontColor': '#F8F8F8',
-  'theme.dark.body.background': '#06070D',
-  'theme.dark.body.fontColor': '#F8F8F8',
-  'theme.light.header.background': '#FAFAFA',
-  'theme.light.header.fontColor': '#0E0D20',
-  'theme.light.body.background': '#EAEAEA',
-  'theme.light.body.fontColor': '#0E0D20',
-}
+  "theme.dark.header.background": "#161A1F",
+  "theme.dark.header.fontColor": "#F8F8F8",
+  "theme.dark.body.background": "#06070D",
+  "theme.dark.body.fontColor": "#F8F8F8",
+  "theme.light.header.background": "#FAFAFA",
+  "theme.light.header.fontColor": "#0E0D20",
+  "theme.light.body.background": "#EAEAEA",
+  "theme.light.body.fontColor": "#0E0D20",
+};
 
 let config = defaultConfig;
 
@@ -66,7 +66,7 @@ if (figma.currentPage.selection.length !== 1) {
       }
     });
     figma.clientStorage.getAsync("theme").then((themeFromStorage) => {
-      figma.clientStorage.getAsync("config").then(configFromCS => {
+      figma.clientStorage.getAsync("config").then((configFromCS) => {
         theme = themeFromStorage || "dark";
         config = configFromCS ? JSON.parse(configFromCS) : defaultConfig;
         figma.ui.postMessage({
@@ -75,7 +75,7 @@ if (figma.currentPage.selection.length !== 1) {
           theme,
           config,
         });
-      });      
+      });
     });
   }
 }
@@ -178,7 +178,9 @@ const renderCombinationsFrame = (
 };
 
 const setSpecsFrameStyles = (specsFrame) => {
-  specsFrame.fills = [hexToFigmaColor(config[`theme.${theme}.body.background`])];
+  specsFrame.fills = [
+    hexToFigmaColor(config[`theme.${theme}.body.background`]),
+  ];
 };
 
 const setSpecsHeadingFrameStyles = (headingFrame) => {
@@ -187,50 +189,65 @@ const setSpecsHeadingFrameStyles = (headingFrame) => {
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
-  headingFrame.fills = [hexToFigmaColor(config[`theme.${theme}.header.background`])];
+  headingFrame.fills = [
+    hexToFigmaColor(config[`theme.${theme}.header.background`]),
+  ];
   headingFrame.layoutAlign = "STRETCH";
   headingFrame.layoutGrow = 0;
   headingFrame.primaryAxisSizingMode = "FIXED";
   headingFrame.counterAxisSizingMode = "AUTO";
 };
 
-const hexToFigmaColor = (hex) => ({type: 'SOLID', color: hexToDecimalRgb(hex)});
+const hexToFigmaColor = (hex) => ({
+  type: "SOLID",
+  color: hexToDecimalRgb(hex),
+});
 
 function hexToDecimalRgb(hex) {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+  hex = hex.replace(shorthandRegex, function (m, r, g, b) {
     return r + r + g + g + b + b;
   });
 
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16) / 255,
-    g: parseInt(result[2], 16) / 255,
-    b: parseInt(result[3], 16) / 255
-  } : null;
+  return result
+    ? {
+        r: parseInt(result[1], 16) / 255,
+        g: parseInt(result[2], 16) / 255,
+        b: parseInt(result[3], 16) / 255,
+      }
+    : null;
 }
 
 const setSpecsHeadingTextStyles = (headingText) => {
-  headingText.fills = [hexToFigmaColor(config[`theme.${theme}.header.fontColor`])];
+  headingText.fills = [
+    hexToFigmaColor(config[`theme.${theme}.header.fontColor`]),
+  ];
   headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
   headingText.fontSize = 38;
 };
 
 const setSectionHeaderStyles = (sectionHeader) => {
-  sectionHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
+  sectionHeader.fills = [
+    hexToFigmaColor(config[`theme.${theme}.body.fontColor`]),
+  ];
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 24;
 };
 
 const setOptionHeaderStyles = (optionHeader) => {
-  optionHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
+  optionHeader.fills = [
+    hexToFigmaColor(config[`theme.${theme}.body.fontColor`]),
+  ];
   optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   optionHeader.fontSize = 18;
 };
 
 const setCombinationHeaderStyles = (combinationHeader) => {
-  combinationHeader.fills = [hexToFigmaColor(config[`theme.${theme}.body.fontColor`])];
+  combinationHeader.fills = [
+    hexToFigmaColor(config[`theme.${theme}.body.fontColor`]),
+  ];
   combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   combinationHeader.fontSize = 18;
 };
@@ -367,6 +384,7 @@ const createAutoFrame = (mode, itemSpacing?) => {
   frame.layoutGrow = 0;
   frame.primaryAxisSizingMode = "AUTO";
   frame.counterAxisSizingMode = "AUTO";
+  frame.clipsContent = false;
   return frame;
 };
 
@@ -388,8 +406,11 @@ figma.ui.onmessage = (msg) => {
   } else if (msg.type === "set-theme") {
     theme = msg.theme;
     figma.clientStorage.setAsync("theme", msg.theme);
-  } else if (msg.type === 'save-config') {
+  } else if (msg.type === "save-config") {
     config = msg.config || defaultConfig;
-    figma.clientStorage.setAsync("config", msg.config ? JSON.stringify(msg.config) : undefined);
+    figma.clientStorage.setAsync(
+      "config",
+      msg.config ? JSON.stringify(msg.config) : undefined
+    );
   }
 };
