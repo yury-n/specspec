@@ -246,6 +246,7 @@ const renderSpecs = (
   combinations,
   combinationsGrouped,
   withIndividualProps,
+  verticalVariantList,
   initProps
 ) => {
   if (generatedSpecIds[theme]) {
@@ -284,7 +285,10 @@ const renderSpecs = (
 
   if (withIndividualProps) {
     Object.keys(propsAndTheirOptions).forEach((prop) => {
-      const propOptionsFrame = createAutoFrame("HORIZONTAL", 30);
+      const propOptionsFrame = createAutoFrame(
+        verticalVariantList ? "VERTICAL" : "HORIZONTAL",
+        30
+      );
       propsAndTheirOptions[prop].forEach((option) => {
         const optionFrame = createAutoFrame("VERTICAL", 20);
         const optionHeader = figma.createText();
@@ -408,12 +412,13 @@ figma.ui.onmessage = (msg) => {
       .then(fetchAllStyles)
       .then(() => {
         specSheetShift = 0;
-        ["light", "dark", "green"].forEach((currentTheme) => {
+        ["dark", "light", "green"].forEach((currentTheme) => {
           theme = currentTheme;
           renderSpecs(
             msg.combinations,
             msg.combinationsGrouped,
             msg.withIndividualProps,
+            msg.verticalVariantList,
             msg.initProps
           );
         });
