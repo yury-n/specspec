@@ -151,43 +151,43 @@ const renderCombinationsFrame = (combinations, propsToExclude = [], excludeProps
     return combinationsFrame;
 };
 const setSpecsFrameStyles = (specsFrame) => {
-    specsFrame.fillStyleId = getStyleId(themeColors[theme]["BACKGROUND_PRIMARY"]);
+    specsFrame.setFillStyleIdAsync(getStyleId(themeColors[theme]["BACKGROUND_PRIMARY"]));
 };
 const setSpecsHeadingFrameStyles = (headingFrame) => {
     headingFrame.paddingTop = 100;
     headingFrame.paddingRight = 50;
     headingFrame.paddingBottom = 32;
     headingFrame.paddingLeft = 50;
-    headingFrame.fillStyleId = getStyleId(themeColors[theme]["BACKGROUND_SECONDARY"]);
+    headingFrame.setFillStyleIdAsync(getStyleId(themeColors[theme]["BACKGROUND_SECONDARY"]));
     headingFrame.layoutAlign = "STRETCH";
 };
 const setSpecsHeadingTextStyles = (headingText) => {
-    headingText.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]);
+    headingText.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]));
     headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
     headingText.fontSize = 38;
 };
 const setSpecsSubHeadingTextStyles = (sectionHeader) => {
-    sectionHeader.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_TERTIARY"]);
+    sectionHeader.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_TERTIARY"]));
     sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
     sectionHeader.fontSize = 16;
 };
 const setSectionHeaderStyles = (sectionHeader) => {
-    sectionHeader.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]);
+    sectionHeader.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]));
     sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
     sectionHeader.fontSize = 24;
 };
 const setOptionHeaderStyles = (optionHeader) => {
-    optionHeader.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]);
+    optionHeader.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]));
     optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
     optionHeader.fontSize = 18;
 };
 const setCombinationHeaderStyles = (combinationHeader) => {
-    combinationHeader.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]);
+    combinationHeader.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_PRIMARY"]));
     combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
     combinationHeader.fontSize = 18;
 };
 const setBorderStyles = (borderRectangle) => {
-    borderRectangle.fillStyleId = getStyleId(themeColors[theme]["TYPOGRAPHY_TERTIARY"]);
+    borderRectangle.setFillStyleIdAsync(getStyleId(themeColors[theme]["TYPOGRAPHY_TERTIARY"]));
 };
 const renderSpecs = (combinations, combinationsGrouped, withIndividualProps, verticalVariantList, initProps) => {
     if (generatedSpecIds[theme]) {

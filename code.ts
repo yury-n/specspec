@@ -182,7 +182,7 @@ const renderCombinationsFrame = (
 };
 
 const setSpecsFrameStyles = (specsFrame) => {
-  specsFrame.fillStyleId = getStyleId(themeColors[theme]["BACKGROUND_PRIMARY"]);
+  specsFrame.setFillStyleIdAsync(getStyleId(themeColors[theme]["BACKGROUND_PRIMARY"]));
 };
 
 const setSpecsHeadingFrameStyles = (headingFrame) => {
@@ -190,56 +190,56 @@ const setSpecsHeadingFrameStyles = (headingFrame) => {
   headingFrame.paddingRight = 50;
   headingFrame.paddingBottom = 32;
   headingFrame.paddingLeft = 50;
-  headingFrame.fillStyleId = getStyleId(
+  headingFrame.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["BACKGROUND_SECONDARY"]
-  );
+  ));
   headingFrame.layoutAlign = "STRETCH";
 };
 
 const setSpecsHeadingTextStyles = (headingText) => {
-  headingText.fillStyleId = getStyleId(
+  headingText.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_PRIMARY"]
-  );
+  ));
   headingText.fontName = { family: "Helvetica Neue", style: "Bold" };
   headingText.fontSize = 38;
 };
 
 const setSpecsSubHeadingTextStyles = (sectionHeader) => {
-  sectionHeader.fillStyleId = getStyleId(
+  sectionHeader.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_TERTIARY"]
-  );
+  ));
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 16;
 };
 
 const setSectionHeaderStyles = (sectionHeader) => {
-  sectionHeader.fillStyleId = getStyleId(
+  sectionHeader.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_PRIMARY"]
-  );
+  ));
   sectionHeader.fontName = { family: "Helvetica Neue", style: "Bold" };
   sectionHeader.fontSize = 24;
 };
 
 const setOptionHeaderStyles = (optionHeader) => {
-  optionHeader.fillStyleId = getStyleId(
+  optionHeader.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_PRIMARY"]
-  );
+  ));
   optionHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   optionHeader.fontSize = 18;
 };
 
 const setCombinationHeaderStyles = (combinationHeader) => {
-  combinationHeader.fillStyleId = getStyleId(
+  combinationHeader.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_PRIMARY"]
-  );
+  ));
   combinationHeader.fontName = { family: "Helvetica Neue", style: "Medium" };
   combinationHeader.fontSize = 18;
 };
 
 const setBorderStyles = (borderRectangle) => {
-  borderRectangle.fillStyleId = getStyleId(
+  borderRectangle.setFillStyleIdAsync(getStyleId(
     themeColors[theme]["TYPOGRAPHY_TERTIARY"]
-  );
+  ));
 };
 
 const renderSpecs = (
